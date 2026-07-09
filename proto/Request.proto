@@ -1,0 +1,20 @@
+syntax="proto3";
+
+
+//1.密钥协商
+//2.密钥校验
+//3.密钥注销
+enum cmdType{
+    KEY_AGREE=0;
+    KEY_CHECK=1;
+    KEY_REVOKE=2;
+}
+
+message Request{
+    cmdType type=1;
+    string clientID=2;
+    string serverID=3;
+    bytes data=4;
+    bytes sign=5;
+    bytes iv=6;
+}
