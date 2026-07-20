@@ -1,5 +1,10 @@
 {
     "ip":"0.0.0.0",
-    "port":8001,
-    "name":"MyServer"
+    "LoginServerPort":8001,
+    "SecMngServerPort":8002,
+    "FileServerPort":8003,
+    "host":"192.168.234.129",
+    "user":"xiluo",
+    "password":"926472",
+    "database":"ftp"
 }
