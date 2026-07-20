@@ -1,0 +1,68 @@
+syntax="proto3";
+
+
+enum CmdType
+{
+    UPLOAD_FILE = 0;
+    DOWNLOAD_FILE = 1;
+    DELETE_FILE = 2;
+    LIST_FILE = 3;
+    MKDIR = 4;
+    RENAME_FILE = 5;
+    UPLOAD_CHECK=6;
+}
+message FileItem{
+    string filename=1;
+    uint64 filesize=2;
+    bool isDir=3;
+    string modifyTime=4;
+}
+
+
+message FileRequest
+{
+    CmdType type = 1;
+
+    string token = 2;
+    string clientID = 3;
+    uint32 seckeyID = 4;
+
+    string filename = 5;
+    uint64 filesize = 6;
+
+    uint64 offset = 7;      // 当前块偏移
+    bool eof = 8;           // 是否最后一块
+    uint32 chunk_size=9;   //快大小
+
+    bytes data = 10;        // 加密后的数据
+
+    bytes md5=11;
+    bytes iv=12;
+
+    string path=13;
+    
+    bytes chunk_md5=14;
+}
+
+
+message FileResponse
+{
+    CmdType type = 1;
+
+    bool status = 2;
+
+    string message = 3;
+
+    string clientID = 4;
+
+    uint64 offset = 5;
+
+    bool eof = 6;
+
+    bytes data = 8;
+
+    repeated FileItem files=9;
+
+    uint32 chunk_size=10;
+
+}

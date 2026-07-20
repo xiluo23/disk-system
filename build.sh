@@ -1,10 +1,17 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 set -e
 
-rm -rf build
-mkdir build
+BUILD_DIR=build
 
-cmake -S . -B build
+mkdir -p ${BUILD_DIR}
 
-cmake --build build -j
+cd ${BUILD_DIR}
+
+rm -rf *
+
+cmake ..
+
+make -j$(nproc)
+
+echo "Build Success!"

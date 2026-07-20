@@ -8,28 +8,11 @@ find_package(Protobuf REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
 find_package(jsoncpp REQUIRED)
+find_package(spdlog REQUIRED)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+include_directories(/usr/include/mysql)
 
-include_directories(
-    ${Protobuf_INCLUDE_DIRS}
-    proto
-)
-
-aux_source_directory(. SRC)
-aux_source_directory(proto PROTO_SRC)
-
-add_executable(server
-    ${SRC}
-    ${PROTO_SRC}
-)
-
-target_link_libraries(server
-    PRIVATE
-    muduo_net
-    muduo_base
-    OpenSSL::Crypto
-    Threads::Threads
-    JsonCpp::JsonCpp
-    protobuf::libprotobuf
-)
+add_subdirectory(SecMngServer)
+add_subdirectory(LoginServer)
+add_subdirectory(FileServer)

@@ -27,6 +27,7 @@ PROTOBUF_CONSTEXPR Request::Request(
   , /*decltype(_impl_.data_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.sign_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.iv_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.seckeyid_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.type_)*/0
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct RequestDefaultTypeInternal {
@@ -55,6 +56,7 @@ const uint32_t TableStruct_Request_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
   PROTOBUF_FIELD_OFFSET(::Request, _impl_.data_),
   PROTOBUF_FIELD_OFFSET(::Request, _impl_.sign_),
   PROTOBUF_FIELD_OFFSET(::Request, _impl_.iv_),
+  PROTOBUF_FIELD_OFFSET(::Request, _impl_.seckeyid_),
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, -1, sizeof(::Request)},
@@ -65,15 +67,16 @@ static const ::_pb::Message* const file_default_instances[] = {
 };
 
 const char descriptor_table_protodef_Request_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\rRequest.proto\"m\n\007Request\022\026\n\004type\030\001 \001(\016"
+  "\n\rRequest.proto\"\177\n\007Request\022\026\n\004type\030\001 \001(\016"
   "2\010.cmdType\022\020\n\010clientID\030\002 \001(\t\022\020\n\010serverID"
   "\030\003 \001(\t\022\014\n\004data\030\004 \001(\014\022\014\n\004sign\030\005 \001(\014\022\n\n\002iv"
-  "\030\006 \001(\014*7\n\007cmdType\022\r\n\tKEY_AGREE\020\000\022\r\n\tKEY_"
-  "CHECK\020\001\022\016\n\nKEY_REVOKE\020\002b\006proto3"
+  "\030\006 \001(\014\022\020\n\010seckeyID\030\007 \001(\t*7\n\007cmdType\022\r\n\tK"
+  "EY_AGREE\020\000\022\r\n\tKEY_CHECK\020\001\022\016\n\nKEY_REVOKE\020"
+  "\002b\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_Request_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_Request_2eproto = {
-    false, false, 191, descriptor_table_protodef_Request_2eproto,
+    false, false, 209, descriptor_table_protodef_Request_2eproto,
     "Request.proto",
     &descriptor_table_Request_2eproto_once, nullptr, 0, 1,
     schemas, file_default_instances, TableStruct_Request_2eproto::offsets,
@@ -123,6 +126,7 @@ Request::Request(const Request& from)
     , decltype(_impl_.data_){}
     , decltype(_impl_.sign_){}
     , decltype(_impl_.iv_){}
+    , decltype(_impl_.seckeyid_){}
     , decltype(_impl_.type_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
@@ -167,6 +171,14 @@ Request::Request(const Request& from)
     _this->_impl_.iv_.Set(from._internal_iv(), 
       _this->GetArenaForAllocation());
   }
+  _impl_.seckeyid_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.seckeyid_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_seckeyid().empty()) {
+    _this->_impl_.seckeyid_.Set(from._internal_seckeyid(), 
+      _this->GetArenaForAllocation());
+  }
   _this->_impl_.type_ = from._impl_.type_;
   // @@protoc_insertion_point(copy_constructor:Request)
 }
@@ -181,6 +193,7 @@ inline void Request::SharedCtor(
     , decltype(_impl_.data_){}
     , decltype(_impl_.sign_){}
     , decltype(_impl_.iv_){}
+    , decltype(_impl_.seckeyid_){}
     , decltype(_impl_.type_){0}
     , /*decltype(_impl_._cached_size_)*/{}
   };
@@ -204,6 +217,10 @@ inline void Request::SharedCtor(
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.iv_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.seckeyid_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.seckeyid_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
 Request::~Request() {
@@ -222,6 +239,7 @@ inline void Request::SharedDtor() {
   _impl_.data_.Destroy();
   _impl_.sign_.Destroy();
   _impl_.iv_.Destroy();
+  _impl_.seckeyid_.Destroy();
 }
 
 void Request::SetCachedSize(int size) const {
@@ -239,6 +257,7 @@ void Request::Clear() {
   _impl_.data_.ClearToEmpty();
   _impl_.sign_.ClearToEmpty();
   _impl_.iv_.ClearToEmpty();
+  _impl_.seckeyid_.ClearToEmpty();
   _impl_.type_ = 0;
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
@@ -302,6 +321,16 @@ const char* Request::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) 
           auto str = _internal_mutable_iv();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // string seckeyID = 7;
+      case 7:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 58)) {
+          auto str = _internal_mutable_seckeyid();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Request.seckeyID"));
         } else
           goto handle_unusual;
         continue;
@@ -379,6 +408,16 @@ uint8_t* Request::_InternalSerialize(
         6, this->_internal_iv(), target);
   }
 
+  // string seckeyID = 7;
+  if (!this->_internal_seckeyid().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_seckeyid().data(), static_cast<int>(this->_internal_seckeyid().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Request.seckeyID");
+    target = stream->WriteStringMaybeAliased(
+        7, this->_internal_seckeyid(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -430,6 +469,13 @@ size_t Request::ByteSizeLong() const {
         this->_internal_iv());
   }
 
+  // string seckeyID = 7;
+  if (!this->_internal_seckeyid().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_seckeyid());
+  }
+
   // .cmdType type = 1;
   if (this->_internal_type() != 0) {
     total_size += 1 +
@@ -468,6 +514,9 @@ void Request::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOB
   }
   if (!from._internal_iv().empty()) {
     _this->_internal_set_iv(from._internal_iv());
+  }
+  if (!from._internal_seckeyid().empty()) {
+    _this->_internal_set_seckeyid(from._internal_seckeyid());
   }
   if (from._internal_type() != 0) {
     _this->_internal_set_type(from._internal_type());
@@ -510,6 +559,10 @@ void Request::InternalSwap(Request* other) {
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.iv_, lhs_arena,
       &other->_impl_.iv_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.seckeyid_, lhs_arena,
+      &other->_impl_.seckeyid_, rhs_arena
   );
   swap(_impl_.type_, other->_impl_.type_);
 }

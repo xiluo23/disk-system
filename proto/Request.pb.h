@@ -206,6 +206,7 @@ class Request final :
     kDataFieldNumber = 4,
     kSignFieldNumber = 5,
     kIvFieldNumber = 6,
+    kSeckeyIDFieldNumber = 7,
     kTypeFieldNumber = 1,
   };
   // string clientID = 2;
@@ -278,6 +279,20 @@ class Request final :
   std::string* _internal_mutable_iv();
   public:
 
+  // string seckeyID = 7;
+  void clear_seckeyid();
+  const std::string& seckeyid() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_seckeyid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_seckeyid();
+  PROTOBUF_NODISCARD std::string* release_seckeyid();
+  void set_allocated_seckeyid(std::string* seckeyid);
+  private:
+  const std::string& _internal_seckeyid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_seckeyid(const std::string& value);
+  std::string* _internal_mutable_seckeyid();
+  public:
+
   // .cmdType type = 1;
   void clear_type();
   ::cmdType type() const;
@@ -300,6 +315,7 @@ class Request final :
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr data_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr sign_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr iv_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr seckeyid_;
     int type_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
@@ -585,6 +601,56 @@ inline void Request::set_allocated_iv(std::string* iv) {
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   // @@protoc_insertion_point(field_set_allocated:Request.iv)
+}
+
+// string seckeyID = 7;
+inline void Request::clear_seckeyid() {
+  _impl_.seckeyid_.ClearToEmpty();
+}
+inline const std::string& Request::seckeyid() const {
+  // @@protoc_insertion_point(field_get:Request.seckeyID)
+  return _internal_seckeyid();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void Request::set_seckeyid(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.seckeyid_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Request.seckeyID)
+}
+inline std::string* Request::mutable_seckeyid() {
+  std::string* _s = _internal_mutable_seckeyid();
+  // @@protoc_insertion_point(field_mutable:Request.seckeyID)
+  return _s;
+}
+inline const std::string& Request::_internal_seckeyid() const {
+  return _impl_.seckeyid_.Get();
+}
+inline void Request::_internal_set_seckeyid(const std::string& value) {
+  
+  _impl_.seckeyid_.Set(value, GetArenaForAllocation());
+}
+inline std::string* Request::_internal_mutable_seckeyid() {
+  
+  return _impl_.seckeyid_.Mutable(GetArenaForAllocation());
+}
+inline std::string* Request::release_seckeyid() {
+  // @@protoc_insertion_point(field_release:Request.seckeyID)
+  return _impl_.seckeyid_.Release();
+}
+inline void Request::set_allocated_seckeyid(std::string* seckeyid) {
+  if (seckeyid != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.seckeyid_.SetAllocated(seckeyid, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.seckeyid_.IsDefault()) {
+    _impl_.seckeyid_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Request.seckeyID)
 }
 
 #ifdef __GNUC__
