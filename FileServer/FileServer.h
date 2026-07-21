@@ -29,7 +29,7 @@ public:
     ~FileServer();
     void start();
     bool verifyToken(const string&,const string&);
-    bool verifyMd5(const string&md5,const unsigned char*data,size_t len);
+    string calcMD5(const unsigned char*data,size_t len);
     void dispatch(const FileRequest& req,FileResponse& rsp);
     bool checkIsExist(const std::string& md5, int& storageId);
 private:
@@ -52,6 +52,8 @@ private:
     void handleRename(const FileRequest& req,FileResponse&rsp);
 
     void handleUploadCheck(const FileRequest& req,FileResponse&rsp);
+
+    void handleDownloadCheck(const FileRequest& req,FileResponse&rsp);
 
     bool encryptResponseData(const std::string& clientId, FileResponse& rsp);
 

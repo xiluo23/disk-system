@@ -68,12 +68,13 @@ enum CmdType : int {
   MKDIR = 4,
   RENAME_FILE = 5,
   UPLOAD_CHECK = 6,
+  DOWNLOAD_CHECK = 7,
   CmdType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   CmdType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool CmdType_IsValid(int value);
 constexpr CmdType CmdType_MIN = UPLOAD_FILE;
-constexpr CmdType CmdType_MAX = UPLOAD_CHECK;
+constexpr CmdType CmdType_MAX = DOWNLOAD_CHECK;
 constexpr int CmdType_ARRAYSIZE = CmdType_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* CmdType_descriptor();
@@ -739,10 +740,12 @@ class FileResponse final :
     kMessageFieldNumber = 3,
     kClientIDFieldNumber = 4,
     kDataFieldNumber = 8,
+    kMd5FieldNumber = 11,
     kTypeFieldNumber = 1,
     kStatusFieldNumber = 2,
     kEofFieldNumber = 6,
     kOffsetFieldNumber = 5,
+    kFilesizeFieldNumber = 12,
     kChunkSizeFieldNumber = 10,
   };
   // repeated .FileItem files = 9;
@@ -805,6 +808,20 @@ class FileResponse final :
   std::string* _internal_mutable_data();
   public:
 
+  // bytes md5 = 11;
+  void clear_md5();
+  const std::string& md5() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_md5(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_md5();
+  PROTOBUF_NODISCARD std::string* release_md5();
+  void set_allocated_md5(std::string* md5);
+  private:
+  const std::string& _internal_md5() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_md5(const std::string& value);
+  std::string* _internal_mutable_md5();
+  public:
+
   // .CmdType type = 1;
   void clear_type();
   ::CmdType type() const;
@@ -841,6 +858,15 @@ class FileResponse final :
   void _internal_set_offset(uint64_t value);
   public:
 
+  // uint64 filesize = 12;
+  void clear_filesize();
+  uint64_t filesize() const;
+  void set_filesize(uint64_t value);
+  private:
+  uint64_t _internal_filesize() const;
+  void _internal_set_filesize(uint64_t value);
+  public:
+
   // uint32 chunk_size = 10;
   void clear_chunk_size();
   uint32_t chunk_size() const;
@@ -862,10 +888,12 @@ class FileResponse final :
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr message_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr clientid_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr data_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr md5_;
     int type_;
     bool status_;
     bool eof_;
     uint64_t offset_;
+    uint64_t filesize_;
     uint32_t chunk_size_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
@@ -1839,6 +1867,76 @@ inline void FileResponse::_internal_set_chunk_size(uint32_t value) {
 inline void FileResponse::set_chunk_size(uint32_t value) {
   _internal_set_chunk_size(value);
   // @@protoc_insertion_point(field_set:FileResponse.chunk_size)
+}
+
+// bytes md5 = 11;
+inline void FileResponse::clear_md5() {
+  _impl_.md5_.ClearToEmpty();
+}
+inline const std::string& FileResponse::md5() const {
+  // @@protoc_insertion_point(field_get:FileResponse.md5)
+  return _internal_md5();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void FileResponse::set_md5(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.md5_.SetBytes(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:FileResponse.md5)
+}
+inline std::string* FileResponse::mutable_md5() {
+  std::string* _s = _internal_mutable_md5();
+  // @@protoc_insertion_point(field_mutable:FileResponse.md5)
+  return _s;
+}
+inline const std::string& FileResponse::_internal_md5() const {
+  return _impl_.md5_.Get();
+}
+inline void FileResponse::_internal_set_md5(const std::string& value) {
+  
+  _impl_.md5_.Set(value, GetArenaForAllocation());
+}
+inline std::string* FileResponse::_internal_mutable_md5() {
+  
+  return _impl_.md5_.Mutable(GetArenaForAllocation());
+}
+inline std::string* FileResponse::release_md5() {
+  // @@protoc_insertion_point(field_release:FileResponse.md5)
+  return _impl_.md5_.Release();
+}
+inline void FileResponse::set_allocated_md5(std::string* md5) {
+  if (md5 != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.md5_.SetAllocated(md5, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.md5_.IsDefault()) {
+    _impl_.md5_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:FileResponse.md5)
+}
+
+// uint64 filesize = 12;
+inline void FileResponse::clear_filesize() {
+  _impl_.filesize_ = uint64_t{0u};
+}
+inline uint64_t FileResponse::_internal_filesize() const {
+  return _impl_.filesize_;
+}
+inline uint64_t FileResponse::filesize() const {
+  // @@protoc_insertion_point(field_get:FileResponse.filesize)
+  return _internal_filesize();
+}
+inline void FileResponse::_internal_set_filesize(uint64_t value) {
+  
+  _impl_.filesize_ = value;
+}
+inline void FileResponse::set_filesize(uint64_t value) {
+  _internal_set_filesize(value);
+  // @@protoc_insertion_point(field_set:FileResponse.filesize)
 }
 
 #ifdef __GNUC__

@@ -106,6 +106,9 @@ void FileServer::dispatch(const FileRequest& req,FileResponse& rsp)
     case UPLOAD_CHECK:
         handleUploadCheck(req,rsp);
         break;
+    case DOWNLOAD_CHECK:
+        handleDownloadCheck(req,rsp);
+        break;
     default:
         rsp.set_status(false);
         rsp.set_message("Unknown cmd");
@@ -148,10 +151,23 @@ void FileServer::onMessage(const muduo::net::TcpConnectionPtr& conn,
         conn->send(packet);
     }
 }
+void FileServer::handleDownloadCheck(const FileRequest& req,FileResponse&rsp){
+    rsp.set_type(DOWNLOAD_CHECK);
+    if(!verifyToken(req.token(),req.clientid()))
+    {
+        rsp.set_status(false);
+        return;
+    }
+    int fileSize=_mysql->getFileSize(stoi(req.clientid()),req.path(),req.filename());
+    rsp.set_status(true);
+    rsp.set_filesize(fileSize);
+    auto file=rsp.add_files();
+    file->set_filename(req.filename());
+    spdlog::debug("send downloadcheck");
+}
 
 void FileServer::handleUploadCheck(const FileRequest& req,FileResponse&rsp){
     rsp.set_type(UPLOAD_CHECK);
-    rsp.set_status(false);
     if (!verifyToken(req.token(), req.clientid()))
     {
         spdlog::warn("verifyToken fail");
@@ -186,20 +202,8 @@ void FileServer::handleUploadCheck(const FileRequest& req,FileResponse&rsp){
     }
     storagePath+=req.filename();
 
-    if (!_mysql->insertUploadTask(
-            std::stoi(req.clientid()),
-            req.md5(),
-            req.filename(),
-            req.path(),
-            storagePath,
-            req.filesize()))
-    {
-        rsp.set_status(false);
-        rsp.set_message("Create upload task failed");
-        return;
-    }
-
-    rsp.set_status(true);
+    _mysql->insertUploadTask(std::stoi(req.clientid()),req.md5(),req.filename(),req.path(),storagePath,req.filesize());
+    rsp.set_status(false);
     rsp.set_offset(0);
     rsp.set_message("New upload");
 }
@@ -235,7 +239,7 @@ bool FileServer::checkIsExist(const std::string& md5, int& storageId)
     return _mysql->checkMD5(md5,storageId);
 }
 
-bool FileServer::verifyMd5(const string&md5,const unsigned char*data,size_t len){
+string FileServer::calcMD5(const unsigned char*data,size_t len){
     unsigned char md[MD5_DIGEST_LENGTH];
     MD5(data,len,md);
     char buf[33];
@@ -245,7 +249,7 @@ bool FileServer::verifyMd5(const string&md5,const unsigned char*data,size_t len)
     }
 
     buf[32] = '\0';
-    return string(buf)==md5;
+    return string(buf);
 }
 // 处理上传请求：先验证身份，再解密文件内容，最后写入文件系统。
 void FileServer::handleUpload(const FileRequest& req, FileResponse& rsp)
@@ -281,7 +285,7 @@ void FileServer::handleUpload(const FileRequest& req, FileResponse& rsp)
         rsp.set_message("AES decrypt failed");
         return;
     }
-    if(!verifyMd5(req.chunk_md5(),plain.data(),plain.size())){
+    if(req.chunk_md5()!=calcMD5(plain.data(),plain.size())){
         spdlog::warn("verifyMd5 fail");
         rsp.set_status(false);
         rsp.set_message("verfiyMD5 fail");
@@ -370,14 +374,14 @@ void FileServer::handleDownload(const FileRequest& req, FileResponse& rsp)
         return;
     }
 
-    if (!_fileManager->download(storagePath, plain))
+    if (!_fileManager->download(storagePath, plain,req.offset()))
     {
         spdlog::warn("download fail");
         rsp.set_status(false);
         rsp.set_message("File not found");
         return;
     }
-
+    rsp.set_md5(calcMD5((const unsigned char*)plain.data(),plain.size()));
     // AES加密
     std::vector<unsigned char> cipher;
     if (!aes.encrypt(
@@ -408,26 +412,18 @@ void FileServer::handleDelete(const FileRequest& req, FileResponse& rsp)
         rsp.set_message("Invalid token");
         return;
     }
-    int storageId=_mysql->getStorageID(stoi(req.clientid()),req.path(),req.filename());
-    std::string storagePath;
-    if(!_mysql->getStoragePath(storageId,storagePath)){
-        rsp.set_status(false);
-        rsp.set_message("getStoragePath fail");
-        return;
-    }
-    
-    bool deleted=false;
-    if (!_mysql->deleteFile(std::stoi(req.clientid()), req.filename(),req.path(),deleted))
+    std::vector<std::string>storage_paths;
+    if (!_mysql->deleteFile(std::stoi(req.clientid()), req.filename(),req.path(),storage_paths))
     {
         spdlog::warn("Delete file metadata failed for {}", req.filename());
         rsp.set_status(false);
         rsp.set_message("DeleteFile failed");
         return ;
     }
-    if(deleted){
-        if (!_fileManager->remove(storagePath))
+    for(auto&path:storage_paths){
+        if (!_fileManager->remove(path))
         {
-            spdlog::warn("fileManager remove fail");
+            spdlog::warn("{} fileManager remove fail",path);
             rsp.set_status(false);
             rsp.set_message("Delete failed");
             return;

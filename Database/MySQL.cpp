@@ -214,9 +214,8 @@ bool MySQL::decreaseRefCount(const int&storageId){
     sql =
         "DELETE FROM file_storage "
         "WHERE id=" + std::to_string(storageId);
-    bool ret=update(sql);
+    update(sql);
     return true;
-    
 }
 bool MySQL::updateToken(int id, const std::string& token)
 {
@@ -283,13 +282,13 @@ bool MySQL::insertUserFile(int userId,
     return true;
 }
 
-bool MySQL::deleteFile(int userId, const std::string& fileName,const std::string&parentPath,bool&deleted)
+bool MySQL::deleteFile(int userId, const std::string& fileName,const std::string&parentPath,std::vector<std::string>&storage_paths)
 {
     if (!conn_)
         return false;
 
     std::string sql =
-        "SELECT storage_id "
+        "SELECT is_dir, storage_id "
         "FROM user_file "
         "WHERE user_id=" + std::to_string(userId) +
         " AND parent_path='" + escapeString(parentPath) + "'" +
@@ -307,23 +306,71 @@ bool MySQL::deleteFile(int userId, const std::string& fileName,const std::string
         mysql_free_result(res);
         return false;
     }
-
-    int storageId = std::stoi(row[0]);
+    bool isDir=std::stoi(row[0])!=0;
+    int storageId =-1;
+    if(row[1])
+        storageId=std::stoi(row[1]);
 
     mysql_free_result(res);
+    if(isDir){
+        // 当前目录路径
+        std::string currentPath = parentPath;
+        if (currentPath != "/" && !currentPath.empty())
+            currentPath += "/";
+        currentPath += fileName;
 
-    // 删除用户文件记录
-    sql =
-        "DELETE FROM user_file "
-        "WHERE user_id=" + std::to_string(userId) +
-        " AND parent_path='" + escapeString(parentPath) + "'" +
-        " AND filename='" + escapeString(fileName) + "'";
+        // 查询子节点
+        sql =
+            "SELECT filename "
+            "FROM user_file "
+            "WHERE user_id=" + std::to_string(userId) +
+            " AND parent_path='" + escapeString(currentPath) + "'";
 
-    if (!update(sql))
-        return false;
+        res = query(sql);
+        if (!res)
+            return false;
+        std::vector<std::string>children;
+        while ((row = mysql_fetch_row(res)) != nullptr)
+        {
+            children.emplace_back(row[0]);
+        }
+        mysql_free_result(res);
+        for(auto&child:children){
+            if (!deleteFile(userId,
+                            child,
+                            currentPath,
+                            storage_paths))
+            {
+                std::cout<<"deleteFile in for children\n";
+                mysql_free_result(res);
+                return false;
+            }
+        }
+        // 删除目录自身
+        sql =
+            "DELETE FROM user_file "
+            "WHERE user_id=" + std::to_string(userId) +
+            " AND parent_path='" + escapeString(parentPath) + "'" +
+            " AND filename='" + escapeString(fileName) + "'";
 
-    // 没有人引用了
-    deleted=decreaseRefCount(storageId);
+        return update(sql);
+    }
+    else if(storageId!=-1){
+        sql =
+            "DELETE FROM user_file "
+            "WHERE user_id=" + std::to_string(userId) +
+            " AND parent_path='" + escapeString(parentPath) + "'" +
+            " AND filename='" + escapeString(fileName) + "'";
+        update(sql);
+        std::string path;
+        if(!getStoragePath(storageId,path)){
+                std::cout<<"get storagePath fail in decreaseRefCount\n";
+                return false;
+        }
+        if(decreaseRefCount(storageId)){
+            storage_paths.emplace_back(path);
+        }
+    }
     return true;
 }
 
@@ -574,6 +621,20 @@ bool MySQL::updateUploadTask(int clientid,const std::string& md5,int upload_size
         " AND md5 = '" + escapeString(md5) + "'";
 
     return update(sql);
+}
+
+int MySQL::getFileSize(int userId,const std::string&parentPath,const std::string&filename){
+    if(!conn_)return -1;
+    std::string sql=
+        "SELECT filesize from user_file where user_id="+std::to_string(userId)+" AND parent_path='"
+        +parentPath+"' AND filename='"+filename+"'";
+    MYSQL_RES* res=query(sql);
+    if(!res){
+        return -1;
+    }
+    MYSQL_ROW row=mysql_fetch_row(res);
+    if(!row)return -1;
+    return std::stoi(row[0]);
 }
 
 

@@ -5,8 +5,9 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include<spdlog/spdlog.h>
 #include "info,h"
-
+const int CHUNK_SIZE=1024*1024;
 class FileManager
 {
 public:
@@ -17,7 +18,7 @@ public:
                 size_t len);
 
     bool download(const std::string& path,
-                  std::vector<char>& data);
+                  std::vector<char>& data,uint64_t offset);
 
     bool remove(const std::string& path);
 

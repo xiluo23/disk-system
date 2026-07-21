@@ -36,7 +36,7 @@ public:
     bool updateToken(int id,
                      const std::string& token);
 
-    bool deleteFile(int userId, const std::string& fileName,const std::string&parentPath,bool&deleted);
+    bool deleteFile(int userId, const std::string& fileName,const std::string&parentPath,std::vector<std::string>&storage_paths);
 
     bool renameFile(int userId,
                        const std::string& parentPath,
@@ -62,7 +62,7 @@ public:
                            bool isDir);
     bool getStoragePath(int storageId, std::string& storagePath);
     int getStorageID(int userId,const std::string& parentPath,const std::string& filename);
-
+    int getFileSize(int userId,const std::string&parentPath,const std::string&filename);
 
 
     bool getUploadTask(int clientid,const std::string&md5,int& uploadSize);

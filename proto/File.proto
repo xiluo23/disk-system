@@ -10,6 +10,7 @@ enum CmdType
     MKDIR = 4;
     RENAME_FILE = 5;
     UPLOAD_CHECK=6;
+    DOWNLOAD_CHECK=7;
 }
 message FileItem{
     string filename=1;
@@ -64,5 +65,9 @@ message FileResponse
     repeated FileItem files=9;
 
     uint32 chunk_size=10;
+
+    bytes md5=11;
+
+    uint64 filesize=12;
 
 }

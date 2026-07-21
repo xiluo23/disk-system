@@ -68,10 +68,12 @@ PROTOBUF_CONSTEXPR FileResponse::FileResponse(
   , /*decltype(_impl_.message_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.clientid_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.data_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.md5_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.type_)*/0
   , /*decltype(_impl_.status_)*/false
   , /*decltype(_impl_.eof_)*/false
   , /*decltype(_impl_.offset_)*/uint64_t{0u}
+  , /*decltype(_impl_.filesize_)*/uint64_t{0u}
   , /*decltype(_impl_.chunk_size_)*/0u
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct FileResponseDefaultTypeInternal {
@@ -133,6 +135,8 @@ const uint32_t TableStruct_File_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(pro
   PROTOBUF_FIELD_OFFSET(::FileResponse, _impl_.data_),
   PROTOBUF_FIELD_OFFSET(::FileResponse, _impl_.files_),
   PROTOBUF_FIELD_OFFSET(::FileResponse, _impl_.chunk_size_),
+  PROTOBUF_FIELD_OFFSET(::FileResponse, _impl_.md5_),
+  PROTOBUF_FIELD_OFFSET(::FileResponse, _impl_.filesize_),
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, -1, sizeof(::FileItem)},
@@ -155,19 +159,20 @@ const char descriptor_table_protodef_File_2eproto[] PROTOBUF_SECTION_VARIABLE(pr
   " \001(\t\022\020\n\010filesize\030\006 \001(\004\022\016\n\006offset\030\007 \001(\004\022\013"
   "\n\003eof\030\010 \001(\010\022\022\n\nchunk_size\030\t \001(\r\022\014\n\004data\030"
   "\n \001(\014\022\013\n\003md5\030\013 \001(\014\022\n\n\002iv\030\014 \001(\014\022\014\n\004path\030\r"
-  " \001(\t\022\021\n\tchunk_md5\030\016 \001(\014\"\262\001\n\014FileResponse"
+  " \001(\t\022\021\n\tchunk_md5\030\016 \001(\014\"\321\001\n\014FileResponse"
   "\022\026\n\004type\030\001 \001(\0162\010.CmdType\022\016\n\006status\030\002 \001(\010"
   "\022\017\n\007message\030\003 \001(\t\022\020\n\010clientID\030\004 \001(\t\022\016\n\006o"
   "ffset\030\005 \001(\004\022\013\n\003eof\030\006 \001(\010\022\014\n\004data\030\010 \001(\014\022\030"
   "\n\005files\030\t \003(\0132\t.FileItem\022\022\n\nchunk_size\030\n"
-  " \001(\r*{\n\007CmdType\022\017\n\013UPLOAD_FILE\020\000\022\021\n\rDOWN"
-  "LOAD_FILE\020\001\022\017\n\013DELETE_FILE\020\002\022\r\n\tLIST_FIL"
-  "E\020\003\022\t\n\005MKDIR\020\004\022\017\n\013RENAME_FILE\020\005\022\020\n\014UPLOA"
-  "D_CHECK\020\006b\006proto3"
+  " \001(\r\022\013\n\003md5\030\013 \001(\014\022\020\n\010filesize\030\014 \001(\004*\217\001\n\007"
+  "CmdType\022\017\n\013UPLOAD_FILE\020\000\022\021\n\rDOWNLOAD_FIL"
+  "E\020\001\022\017\n\013DELETE_FILE\020\002\022\r\n\tLIST_FILE\020\003\022\t\n\005M"
+  "KDIR\020\004\022\017\n\013RENAME_FILE\020\005\022\020\n\014UPLOAD_CHECK\020"
+  "\006\022\022\n\016DOWNLOAD_CHECK\020\007b\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_File_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_File_2eproto = {
-    false, false, 657, descriptor_table_protodef_File_2eproto,
+    false, false, 709, descriptor_table_protodef_File_2eproto,
     "File.proto",
     &descriptor_table_File_2eproto_once, nullptr, 0, 3,
     schemas, file_default_instances, TableStruct_File_2eproto::offsets,
@@ -193,6 +198,7 @@ bool CmdType_IsValid(int value) {
     case 4:
     case 5:
     case 6:
+    case 7:
       return true;
     default:
       return false;
@@ -1225,10 +1231,12 @@ FileResponse::FileResponse(const FileResponse& from)
     , decltype(_impl_.message_){}
     , decltype(_impl_.clientid_){}
     , decltype(_impl_.data_){}
+    , decltype(_impl_.md5_){}
     , decltype(_impl_.type_){}
     , decltype(_impl_.status_){}
     , decltype(_impl_.eof_){}
     , decltype(_impl_.offset_){}
+    , decltype(_impl_.filesize_){}
     , decltype(_impl_.chunk_size_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
@@ -1257,6 +1265,14 @@ FileResponse::FileResponse(const FileResponse& from)
     _this->_impl_.data_.Set(from._internal_data(), 
       _this->GetArenaForAllocation());
   }
+  _impl_.md5_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.md5_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_md5().empty()) {
+    _this->_impl_.md5_.Set(from._internal_md5(), 
+      _this->GetArenaForAllocation());
+  }
   ::memcpy(&_impl_.type_, &from._impl_.type_,
     static_cast<size_t>(reinterpret_cast<char*>(&_impl_.chunk_size_) -
     reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.chunk_size_));
@@ -1272,10 +1288,12 @@ inline void FileResponse::SharedCtor(
     , decltype(_impl_.message_){}
     , decltype(_impl_.clientid_){}
     , decltype(_impl_.data_){}
+    , decltype(_impl_.md5_){}
     , decltype(_impl_.type_){0}
     , decltype(_impl_.status_){false}
     , decltype(_impl_.eof_){false}
     , decltype(_impl_.offset_){uint64_t{0u}}
+    , decltype(_impl_.filesize_){uint64_t{0u}}
     , decltype(_impl_.chunk_size_){0u}
     , /*decltype(_impl_._cached_size_)*/{}
   };
@@ -1290,6 +1308,10 @@ inline void FileResponse::SharedCtor(
   _impl_.data_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.data_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.md5_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.md5_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
@@ -1308,6 +1330,7 @@ inline void FileResponse::SharedDtor() {
   _impl_.message_.Destroy();
   _impl_.clientid_.Destroy();
   _impl_.data_.Destroy();
+  _impl_.md5_.Destroy();
 }
 
 void FileResponse::SetCachedSize(int size) const {
@@ -1324,6 +1347,7 @@ void FileResponse::Clear() {
   _impl_.message_.ClearToEmpty();
   _impl_.clientid_.ClearToEmpty();
   _impl_.data_.ClearToEmpty();
+  _impl_.md5_.ClearToEmpty();
   ::memset(&_impl_.type_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&_impl_.chunk_size_) -
       reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.chunk_size_));
@@ -1415,6 +1439,23 @@ const char* FileResponse::_InternalParse(const char* ptr, ::_pbi::ParseContext* 
       case 10:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 80)) {
           _impl_.chunk_size_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // bytes md5 = 11;
+      case 11:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 90)) {
+          auto str = _internal_mutable_md5();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // uint64 filesize = 12;
+      case 12:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 96)) {
+          _impl_.filesize_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
@@ -1513,6 +1554,18 @@ uint8_t* FileResponse::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteUInt32ToArray(10, this->_internal_chunk_size(), target);
   }
 
+  // bytes md5 = 11;
+  if (!this->_internal_md5().empty()) {
+    target = stream->WriteBytesMaybeAliased(
+        11, this->_internal_md5(), target);
+  }
+
+  // uint64 filesize = 12;
+  if (this->_internal_filesize() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(12, this->_internal_filesize(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -1557,6 +1610,13 @@ size_t FileResponse::ByteSizeLong() const {
         this->_internal_data());
   }
 
+  // bytes md5 = 11;
+  if (!this->_internal_md5().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::BytesSize(
+        this->_internal_md5());
+  }
+
   // .CmdType type = 1;
   if (this->_internal_type() != 0) {
     total_size += 1 +
@@ -1576,6 +1636,11 @@ size_t FileResponse::ByteSizeLong() const {
   // uint64 offset = 5;
   if (this->_internal_offset() != 0) {
     total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_offset());
+  }
+
+  // uint64 filesize = 12;
+  if (this->_internal_filesize() != 0) {
+    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_filesize());
   }
 
   // uint32 chunk_size = 10;
@@ -1611,6 +1676,9 @@ void FileResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::P
   if (!from._internal_data().empty()) {
     _this->_internal_set_data(from._internal_data());
   }
+  if (!from._internal_md5().empty()) {
+    _this->_internal_set_md5(from._internal_md5());
+  }
   if (from._internal_type() != 0) {
     _this->_internal_set_type(from._internal_type());
   }
@@ -1622,6 +1690,9 @@ void FileResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::P
   }
   if (from._internal_offset() != 0) {
     _this->_internal_set_offset(from._internal_offset());
+  }
+  if (from._internal_filesize() != 0) {
+    _this->_internal_set_filesize(from._internal_filesize());
   }
   if (from._internal_chunk_size() != 0) {
     _this->_internal_set_chunk_size(from._internal_chunk_size());
@@ -1657,6 +1728,10 @@ void FileResponse::InternalSwap(FileResponse* other) {
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.data_, lhs_arena,
       &other->_impl_.data_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.md5_, lhs_arena,
+      &other->_impl_.md5_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
       PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.chunk_size_)

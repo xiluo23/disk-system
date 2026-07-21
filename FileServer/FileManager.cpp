@@ -95,16 +95,43 @@ bool FileManager::upload(const std::string& path, const char* data, size_t len)
 }
 
 // 读取指定文件内容到内存缓冲区。
-bool FileManager::download(const std::string& path, std::vector<char>& data)
+bool FileManager::download(const std::string& path,std::vector<char>& data,uint64_t offset)
 {
     std::string resolved = resolvePath(path);
-    std::ifstream in(resolved, std::ios::binary);
-    if (!in)
-    {
+
+
+    std::ifstream in(
+        resolved,
+        std::ios::binary);
+
+    if(!in)
         return false;
+
+    uint64_t fileSize =
+        fs::file_size(resolved);
+
+    if(offset >= fileSize)
+    {
+        data.clear();
+        return true;
     }
 
-    data.assign(std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>());
+    in.seekg(offset,std::ios::beg);
+
+    size_t readSize =
+        std::min(
+            (uint64_t)CHUNK_SIZE,
+            fileSize-offset);
+
+    data.resize(readSize);
+
+    in.read(
+        data.data(),
+        readSize);
+
+    data.resize(
+        in.gcount());
+
     return true;
 }
 
