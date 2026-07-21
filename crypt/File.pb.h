@@ -83,6 +83,7 @@ enum CmdType : int {
   MKDIR = 4,
   RENAME_FILE = 5,
   UPLOAD_CHECK = 6,
+  DOWNLOAD_CHECK = 7,
   CmdType_INT_MIN_SENTINEL_DO_NOT_USE_ =
       ::std::numeric_limits<::int32_t>::min(),
   CmdType_INT_MAX_SENTINEL_DO_NOT_USE_ =
@@ -93,11 +94,11 @@ extern const uint32_t CmdType_internal_data_[];
 inline constexpr CmdType CmdType_MIN =
     static_cast<CmdType>(0);
 inline constexpr CmdType CmdType_MAX =
-    static_cast<CmdType>(6);
+    static_cast<CmdType>(7);
 inline bool CmdType_IsValid(int value) {
-  return 0 <= value && value <= 6;
+  return 0 <= value && value <= 7;
 }
-inline constexpr int CmdType_ARRAYSIZE = 6 + 1;
+inline constexpr int CmdType_ARRAYSIZE = 7 + 1;
 const ::google::protobuf::EnumDescriptor* PROTOBUF_NONNULL CmdType_descriptor();
 template <typename T>
 const ::std::string& CmdType_Name(T value) {
@@ -108,7 +109,7 @@ const ::std::string& CmdType_Name(T value) {
 }
 template <>
 inline const ::std::string& CmdType_Name(CmdType value) {
-  return ::google::protobuf::internal::NameOfDenseEnum<CmdType_descriptor, 0, 6>(
+  return ::google::protobuf::internal::NameOfDenseEnum<CmdType_descriptor, 0, 7>(
       static_cast<int>(value));
 }
 inline bool CmdType_Parse(
@@ -890,10 +891,12 @@ class FileResponse final : public ::google::protobuf::Message
     kMessageFieldNumber = 3,
     kClientIDFieldNumber = 4,
     kDataFieldNumber = 8,
+    kMd5FieldNumber = 11,
     kTypeFieldNumber = 1,
     kStatusFieldNumber = 2,
     kEofFieldNumber = 6,
     kOffsetFieldNumber = 5,
+    kFilesizeFieldNumber = 12,
     kChunkSizeFieldNumber = 10,
   };
   // repeated .FileItem files = 9;
@@ -958,6 +961,21 @@ class FileResponse final : public ::google::protobuf::Message
   ::std::string* PROTOBUF_NONNULL _internal_mutable_data();
 
   public:
+  // bytes md5 = 11;
+  void clear_md5() ;
+  const ::std::string& md5() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_md5(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_md5();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_md5();
+  void set_allocated_md5(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_md5() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_md5(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_md5();
+
+  public:
   // .CmdType type = 1;
   void clear_type() ;
   ::CmdType type() const;
@@ -998,6 +1016,16 @@ class FileResponse final : public ::google::protobuf::Message
   void _internal_set_offset(::uint64_t value);
 
   public:
+  // uint64 filesize = 12;
+  void clear_filesize() ;
+  ::uint64_t filesize() const;
+  void set_filesize(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_filesize() const;
+  void _internal_set_filesize(::uint64_t value);
+
+  public:
   // uint32 chunk_size = 10;
   void clear_chunk_size() ;
   ::uint32_t chunk_size() const;
@@ -1012,7 +1040,7 @@ class FileResponse final : public ::google::protobuf::Message
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<4, 9,
+  static const ::google::protobuf::internal::TcParseTable<4, 11,
                                    1, 44,
                                    2>
       _table_;
@@ -1038,10 +1066,12 @@ class FileResponse final : public ::google::protobuf::Message
     ::google::protobuf::internal::ArenaStringPtr message_;
     ::google::protobuf::internal::ArenaStringPtr clientid_;
     ::google::protobuf::internal::ArenaStringPtr data_;
+    ::google::protobuf::internal::ArenaStringPtr md5_;
     int type_;
     bool status_;
     bool eof_;
     ::uint64_t offset_;
+    ::uint64_t filesize_;
     ::uint32_t chunk_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -1930,7 +1960,7 @@ inline void FileResponse::clear_type() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.type_ = 0;
   ClearHasBit(_impl_._has_bits_[0],
-                  0x00000010U);
+                  0x00000020U);
 }
 inline ::CmdType FileResponse::type() const {
   // @@protoc_insertion_point(field_get:FileResponse.type)
@@ -1938,7 +1968,7 @@ inline ::CmdType FileResponse::type() const {
 }
 inline void FileResponse::set_type(::CmdType value) {
   _internal_set_type(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
   // @@protoc_insertion_point(field_set:FileResponse.type)
 }
 inline ::CmdType FileResponse::_internal_type() const {
@@ -1955,7 +1985,7 @@ inline void FileResponse::clear_status() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.status_ = false;
   ClearHasBit(_impl_._has_bits_[0],
-                  0x00000020U);
+                  0x00000040U);
 }
 inline bool FileResponse::status() const {
   // @@protoc_insertion_point(field_get:FileResponse.status)
@@ -1963,7 +1993,7 @@ inline bool FileResponse::status() const {
 }
 inline void FileResponse::set_status(bool value) {
   _internal_set_status(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
   // @@protoc_insertion_point(field_set:FileResponse.status)
 }
 inline bool FileResponse::_internal_status() const {
@@ -2110,7 +2140,7 @@ inline void FileResponse::clear_offset() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.offset_ = ::uint64_t{0u};
   ClearHasBit(_impl_._has_bits_[0],
-                  0x00000080U);
+                  0x00000100U);
 }
 inline ::uint64_t FileResponse::offset() const {
   // @@protoc_insertion_point(field_get:FileResponse.offset)
@@ -2118,7 +2148,7 @@ inline ::uint64_t FileResponse::offset() const {
 }
 inline void FileResponse::set_offset(::uint64_t value) {
   _internal_set_offset(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000100U);
   // @@protoc_insertion_point(field_set:FileResponse.offset)
 }
 inline ::uint64_t FileResponse::_internal_offset() const {
@@ -2135,7 +2165,7 @@ inline void FileResponse::clear_eof() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.eof_ = false;
   ClearHasBit(_impl_._has_bits_[0],
-                  0x00000040U);
+                  0x00000080U);
 }
 inline bool FileResponse::eof() const {
   // @@protoc_insertion_point(field_get:FileResponse.eof)
@@ -2143,7 +2173,7 @@ inline bool FileResponse::eof() const {
 }
 inline void FileResponse::set_eof(bool value) {
   _internal_set_eof(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
   // @@protoc_insertion_point(field_set:FileResponse.eof)
 }
 inline bool FileResponse::_internal_eof() const {
@@ -2281,7 +2311,7 @@ inline void FileResponse::clear_chunk_size() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.chunk_size_ = 0u;
   ClearHasBit(_impl_._has_bits_[0],
-                  0x00000100U);
+                  0x00000400U);
 }
 inline ::uint32_t FileResponse::chunk_size() const {
   // @@protoc_insertion_point(field_get:FileResponse.chunk_size)
@@ -2289,7 +2319,7 @@ inline ::uint32_t FileResponse::chunk_size() const {
 }
 inline void FileResponse::set_chunk_size(::uint32_t value) {
   _internal_set_chunk_size(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000100U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000400U);
   // @@protoc_insertion_point(field_set:FileResponse.chunk_size)
 }
 inline ::uint32_t FileResponse::_internal_chunk_size() const {
@@ -2299,6 +2329,96 @@ inline ::uint32_t FileResponse::_internal_chunk_size() const {
 inline void FileResponse::_internal_set_chunk_size(::uint32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.chunk_size_ = value;
+}
+
+// bytes md5 = 11;
+inline void FileResponse::clear_md5() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.md5_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000010U);
+}
+inline const ::std::string& FileResponse::md5() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:FileResponse.md5)
+  return _internal_md5();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void FileResponse::set_md5(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  _impl_.md5_.SetBytes(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:FileResponse.md5)
+}
+inline ::std::string* PROTOBUF_NONNULL FileResponse::mutable_md5()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ::std::string* _s = _internal_mutable_md5();
+  // @@protoc_insertion_point(field_mutable:FileResponse.md5)
+  return _s;
+}
+inline const ::std::string& FileResponse::_internal_md5() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.md5_.Get();
+}
+inline void FileResponse::_internal_set_md5(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.md5_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL FileResponse::_internal_mutable_md5() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.md5_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE FileResponse::release_md5() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:FileResponse.md5)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000010U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  auto* released = _impl_.md5_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.md5_.Set("", GetArena());
+  }
+  return released;
+}
+inline void FileResponse::set_allocated_md5(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  }
+  _impl_.md5_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.md5_.IsDefault()) {
+    _impl_.md5_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:FileResponse.md5)
+}
+
+// uint64 filesize = 12;
+inline void FileResponse::clear_filesize() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.filesize_ = ::uint64_t{0u};
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000200U);
+}
+inline ::uint64_t FileResponse::filesize() const {
+  // @@protoc_insertion_point(field_get:FileResponse.filesize)
+  return _internal_filesize();
+}
+inline void FileResponse::set_filesize(::uint64_t value) {
+  _internal_set_filesize(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000200U);
+  // @@protoc_insertion_point(field_set:FileResponse.filesize)
+}
+inline ::uint64_t FileResponse::_internal_filesize() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.filesize_;
+}
+inline void FileResponse::_internal_set_filesize(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.filesize_ = value;
 }
 
 #ifdef __GNUC__

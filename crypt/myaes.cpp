@@ -81,12 +81,6 @@ bool MyAES::encrypt(const unsigned char* plain,
     generateIV();
     unsigned char iv[AES_BLOCK_SIZE];
     memcpy(iv, iv_, AES_BLOCK_SIZE);
-    qDebug() << "key:"
-             << QByteArray(reinterpret_cast<const char*>(getKey()),
-                           KEY_SIZE).toHex();
-    qDebug() << "iv:"
-             << QByteArray(reinterpret_cast<const char*>(getIV()),
-                           IV_SIZE).toHex();
 
     AES_cbc_encrypt(cipher.data(),
                     cipher.data(),

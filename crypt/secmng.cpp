@@ -5,7 +5,7 @@ Secmng::Secmng(QObject*parent):QObject(parent),nonce_(1),seckeyid_(1) {
     rsa_->generate_key(2048);//256byte
     aes_=new MyAES;
     socket_=new QTcpSocket(this);
-    socket_->connectToHost("192.168.234.129",8001);
+    socket_->connectToHost("192.168.234.129",8002);
     timer_=new QTimer(this);
     connect(timer_,
             &QTimer::timeout,

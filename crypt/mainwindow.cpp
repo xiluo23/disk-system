@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setFixedWidth(500);
     ui->setupUi(this);    
     _socket=new QTcpSocket(this);
-    _socket->connectToHost("192.168.234.129",8002);
+    _socket->connectToHost("192.168.234.129",8001);
     _secmng=nullptr;
     connect(_socket,
             &QTcpSocket::readyRead,

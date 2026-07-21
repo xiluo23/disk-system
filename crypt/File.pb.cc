@@ -124,10 +124,14 @@ inline constexpr FileResponse::Impl_::Impl_(
         data_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
+        md5_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
         type_{static_cast< ::CmdType >(0)},
         status_{false},
         eof_{false},
         offset_{::uint64_t{0u}},
+        filesize_{::uint64_t{0u}},
         chunk_size_{0u} {}
 
 template <typename>
@@ -200,7 +204,7 @@ const ::uint32_t
         7,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::FileResponse, _impl_._has_bits_),
-        12, // hasbit index offset
+        14, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::FileResponse, _impl_.type_),
         PROTOBUF_FIELD_OFFSET(::FileResponse, _impl_.status_),
         PROTOBUF_FIELD_OFFSET(::FileResponse, _impl_.message_),
@@ -210,15 +214,19 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::FileResponse, _impl_.data_),
         PROTOBUF_FIELD_OFFSET(::FileResponse, _impl_.files_),
         PROTOBUF_FIELD_OFFSET(::FileResponse, _impl_.chunk_size_),
-        4,
+        PROTOBUF_FIELD_OFFSET(::FileResponse, _impl_.md5_),
+        PROTOBUF_FIELD_OFFSET(::FileResponse, _impl_.filesize_),
         5,
+        6,
         1,
         2,
+        8,
         7,
-        6,
         3,
         0,
-        8,
+        10,
+        4,
+        9,
 };
 
 static const ::_pbi::MigrationSchema
@@ -242,21 +250,22 @@ const char descriptor_table_protodef_File_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIA
     " \001(\t\022\020\n\010filesize\030\006 \001(\004\022\016\n\006offset\030\007 \001(\004\022\013"
     "\n\003eof\030\010 \001(\010\022\022\n\nchunk_size\030\t \001(\r\022\014\n\004data\030"
     "\n \001(\014\022\013\n\003md5\030\013 \001(\014\022\n\n\002iv\030\014 \001(\014\022\014\n\004path\030\r"
-    " \001(\t\022\021\n\tchunk_md5\030\016 \001(\014\"\262\001\n\014FileResponse"
+    " \001(\t\022\021\n\tchunk_md5\030\016 \001(\014\"\321\001\n\014FileResponse"
     "\022\026\n\004type\030\001 \001(\0162\010.CmdType\022\016\n\006status\030\002 \001(\010"
     "\022\017\n\007message\030\003 \001(\t\022\020\n\010clientID\030\004 \001(\t\022\016\n\006o"
     "ffset\030\005 \001(\004\022\013\n\003eof\030\006 \001(\010\022\014\n\004data\030\010 \001(\014\022\030"
     "\n\005files\030\t \003(\0132\t.FileItem\022\022\n\nchunk_size\030\n"
-    " \001(\r*{\n\007CmdType\022\017\n\013UPLOAD_FILE\020\000\022\021\n\rDOWN"
-    "LOAD_FILE\020\001\022\017\n\013DELETE_FILE\020\002\022\r\n\tLIST_FIL"
-    "E\020\003\022\t\n\005MKDIR\020\004\022\017\n\013RENAME_FILE\020\005\022\020\n\014UPLOA"
-    "D_CHECK\020\006b\006proto3"
+    " \001(\r\022\013\n\003md5\030\013 \001(\014\022\020\n\010filesize\030\014 \001(\004*\217\001\n\007"
+    "CmdType\022\017\n\013UPLOAD_FILE\020\000\022\021\n\rDOWNLOAD_FIL"
+    "E\020\001\022\017\n\013DELETE_FILE\020\002\022\r\n\tLIST_FILE\020\003\022\t\n\005M"
+    "KDIR\020\004\022\017\n\013RENAME_FILE\020\005\022\020\n\014UPLOAD_CHECK\020"
+    "\006\022\022\n\016DOWNLOAD_CHECK\020\007b\006proto3"
 };
 static ::absl::once_flag descriptor_table_File_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_File_2eproto = {
     false,
     false,
-    657,
+    709,
     descriptor_table_protodef_File_2eproto,
     "File.proto",
     &descriptor_table_File_2eproto_once,
@@ -274,7 +283,7 @@ const ::google::protobuf::EnumDescriptor* PROTOBUF_NONNULL CmdType_descriptor() 
   return file_level_enum_descriptors_File_2eproto[0];
 }
 PROTOBUF_CONSTINIT const uint32_t CmdType_internal_data_[] = {
-    458752u, 0u, };
+    524288u, 0u, };
 // ===================================================================
 
 class FileItem::_Internal {
@@ -1439,7 +1448,8 @@ PROTOBUF_NDEBUG_INLINE FileResponse::Impl_::Impl_(
         files_{visibility, arena, from.files_},
         message_(arena, from.message_),
         clientid_(arena, from.clientid_),
-        data_(arena, from.data_) {}
+        data_(arena, from.data_),
+        md5_(arena, from.md5_) {}
 
 FileResponse::FileResponse(
     ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
@@ -1471,7 +1481,8 @@ PROTOBUF_NDEBUG_INLINE FileResponse::Impl_::Impl_(
         files_{visibility, arena},
         message_(arena),
         clientid_(arena),
-        data_(arena) {}
+        data_(arena),
+        md5_(arena) {}
 
 inline void FileResponse::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
@@ -1496,6 +1507,7 @@ inline void FileResponse::SharedDtor(MessageLite& self) {
   this_._impl_.message_.Destroy();
   this_._impl_.clientid_.Destroy();
   this_._impl_.data_.Destroy();
+  this_._impl_.md5_.Destroy();
   this_._impl_.~Impl_();
 }
 
@@ -1554,16 +1566,16 @@ FileResponse::GetClassData() const {
   return FileResponse_class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<4, 9, 1, 44, 2>
+const ::_pbi::TcParseTable<4, 11, 1, 44, 2>
 FileResponse::_table_ = {
   {
     PROTOBUF_FIELD_OFFSET(FileResponse, _impl_._has_bits_),
     0, // no _extensions_
-    10, 120,  // max_field_number, fast_idx_mask
+    12, 120,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294966336,  // skipmap
+    4294963264,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    9,  // num_field_entries
+    11,  // num_field_entries
     1,  // num_aux_entries
     offsetof(decltype(_table_), aux_entries),
     FileResponse_class_data_.base(),
@@ -1575,12 +1587,12 @@ FileResponse::_table_ = {
   }, {{
     {::_pbi::TcParser::MiniParse, {}},
     // .CmdType type = 1;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(FileResponse, _impl_.type_), 4>(),
-     {8, 4, 0,
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(FileResponse, _impl_.type_), 5>(),
+     {8, 5, 0,
       PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.type_)}},
     // bool status = 2;
-    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(FileResponse, _impl_.status_), 5>(),
-     {16, 5, 0,
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(FileResponse, _impl_.status_), 6>(),
+     {16, 6, 0,
       PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.status_)}},
     // string message = 3;
     {::_pbi::TcParser::FastUS1,
@@ -1591,12 +1603,12 @@ FileResponse::_table_ = {
      {34, 2, 0,
       PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.clientid_)}},
     // uint64 offset = 5;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(FileResponse, _impl_.offset_), 7>(),
-     {40, 7, 0,
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(FileResponse, _impl_.offset_), 8>(),
+     {40, 8, 0,
       PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.offset_)}},
     // bool eof = 6;
-    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(FileResponse, _impl_.eof_), 6>(),
-     {48, 6, 0,
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(FileResponse, _impl_.eof_), 7>(),
+     {48, 7, 0,
       PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.eof_)}},
     {::_pbi::TcParser::MiniParse, {}},
     // bytes data = 8;
@@ -1608,11 +1620,17 @@ FileResponse::_table_ = {
      {74, 0, 0,
       PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.files_)}},
     // uint32 chunk_size = 10;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(FileResponse, _impl_.chunk_size_), 8>(),
-     {80, 8, 0,
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(FileResponse, _impl_.chunk_size_), 10>(),
+     {80, 10, 0,
       PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.chunk_size_)}},
-    {::_pbi::TcParser::MiniParse, {}},
-    {::_pbi::TcParser::MiniParse, {}},
+    // bytes md5 = 11;
+    {::_pbi::TcParser::FastBS1,
+     {90, 4, 0,
+      PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.md5_)}},
+    // uint64 filesize = 12;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(FileResponse, _impl_.filesize_), 9>(),
+     {96, 9, 0,
+      PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.filesize_)}},
     {::_pbi::TcParser::MiniParse, {}},
     {::_pbi::TcParser::MiniParse, {}},
     {::_pbi::TcParser::MiniParse, {}},
@@ -1620,23 +1638,27 @@ FileResponse::_table_ = {
     65535, 65535
   }}, {{
     // .CmdType type = 1;
-    {PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.type_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kOpenEnum)},
+    {PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.type_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kOpenEnum)},
     // bool status = 2;
-    {PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.status_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
+    {PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.status_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
     // string message = 3;
     {PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.message_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
     // string clientID = 4;
     {PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.clientid_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
     // uint64 offset = 5;
-    {PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.offset_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kUInt64)},
+    {PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.offset_), _Internal::kHasBitsOffset + 8, 0, (0 | ::_fl::kFcOptional | ::_fl::kUInt64)},
     // bool eof = 6;
-    {PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.eof_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
+    {PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.eof_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
     // bytes data = 8;
     {PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.data_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kBytes | ::_fl::kRepAString)},
     // repeated .FileItem files = 9;
     {PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.files_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
     // uint32 chunk_size = 10;
-    {PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.chunk_size_), _Internal::kHasBitsOffset + 8, 0, (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    {PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.chunk_size_), _Internal::kHasBitsOffset + 10, 0, (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // bytes md5 = 11;
+    {PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.md5_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kBytes | ::_fl::kRepAString)},
+    // uint64 filesize = 12;
+    {PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.filesize_), _Internal::kHasBitsOffset + 9, 0, (0 | ::_fl::kFcOptional | ::_fl::kUInt64)},
   }},
   {{
       {::_pbi::TcParser::GetTable<::FileItem>()},
@@ -1656,7 +1678,7 @@ PROTOBUF_NOINLINE void FileResponse::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
     if (CheckHasBitForRepeated(cached_has_bits, 0x00000001U)) {
       _impl_.files_.Clear();
     }
@@ -1669,13 +1691,20 @@ PROTOBUF_NOINLINE void FileResponse::Clear() {
     if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       _impl_.data_.ClearNonDefaultToEmpty();
     }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      _impl_.md5_.ClearNonDefaultToEmpty();
+    }
   }
-  if (BatchCheckHasBit(cached_has_bits, 0x000000f0U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x000000e0U)) {
     ::memset(&_impl_.type_, 0, static_cast<::size_t>(
-        reinterpret_cast<char*>(&_impl_.offset_) -
-        reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.offset_));
+        reinterpret_cast<char*>(&_impl_.eof_) -
+        reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.eof_));
   }
-  _impl_.chunk_size_ = 0u;
+  if (BatchCheckHasBit(cached_has_bits, 0x00000700U)) {
+    ::memset(&_impl_.offset_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.chunk_size_) -
+        reinterpret_cast<char*>(&_impl_.offset_)) + sizeof(_impl_.chunk_size_));
+  }
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -1700,7 +1729,7 @@ PROTOBUF_NOINLINE void FileResponse::Clear() {
 
   cached_has_bits = this_._impl_._has_bits_[0];
   // .CmdType type = 1;
-  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
     if (this_._internal_type() != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteEnumToArray(
@@ -1709,7 +1738,7 @@ PROTOBUF_NOINLINE void FileResponse::Clear() {
   }
 
   // bool status = 2;
-  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
     if (this_._internal_status() != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteBoolToArray(
@@ -1738,7 +1767,7 @@ PROTOBUF_NOINLINE void FileResponse::Clear() {
   }
 
   // uint64 offset = 5;
-  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000100U)) {
     if (this_._internal_offset() != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
@@ -1747,7 +1776,7 @@ PROTOBUF_NOINLINE void FileResponse::Clear() {
   }
 
   // bool eof = 6;
-  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
     if (this_._internal_eof() != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteBoolToArray(
@@ -1777,11 +1806,28 @@ PROTOBUF_NOINLINE void FileResponse::Clear() {
   }
 
   // uint32 chunk_size = 10;
-  if (CheckHasBit(cached_has_bits, 0x00000100U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000400U)) {
     if (this_._internal_chunk_size() != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
           10, this_._internal_chunk_size(), target);
+    }
+  }
+
+  // bytes md5 = 11;
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (!this_._internal_md5().empty()) {
+      const ::std::string& _s = this_._internal_md5();
+      target = stream->WriteBytesMaybeAliased(11, _s, target);
+    }
+  }
+
+  // uint64 filesize = 12;
+  if (CheckHasBit(cached_has_bits, 0x00000200U)) {
+    if (this_._internal_filesize() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+          12, this_._internal_filesize(), target);
     }
   }
 
@@ -1839,36 +1885,50 @@ PROTOBUF_NOINLINE void FileResponse::Clear() {
                                         this_._internal_data());
       }
     }
-    // .CmdType type = 1;
+    // bytes md5 = 11;
     if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (!this_._internal_md5().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::BytesSize(
+                                        this_._internal_md5());
+      }
+    }
+    // .CmdType type = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
       if (this_._internal_type() != 0) {
         total_size += 1 +
                       ::_pbi::WireFormatLite::EnumSize(this_._internal_type());
       }
     }
     // bool status = 2;
-    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (this_._internal_status() != 0) {
         total_size += 2;
       }
     }
     // bool eof = 6;
-    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
       if (this_._internal_eof() != 0) {
         total_size += 2;
       }
     }
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x00000700U)) {
     // uint64 offset = 5;
-    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000100U)) {
       if (this_._internal_offset() != 0) {
         total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
             this_._internal_offset());
       }
     }
-  }
-   {
+    // uint64 filesize = 12;
+    if (CheckHasBit(cached_has_bits, 0x00000200U)) {
+      if (this_._internal_filesize() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+            this_._internal_filesize());
+      }
+    }
     // uint32 chunk_size = 10;
-    if (CheckHasBit(cached_has_bits, 0x00000100U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000400U)) {
       if (this_._internal_chunk_size() != 0) {
         total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
             this_._internal_chunk_size());
@@ -1928,29 +1988,45 @@ void FileResponse::MergeImpl(::google::protobuf::MessageLite& to_msg,
       }
     }
     if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (!from._internal_md5().empty()) {
+        _this->_internal_set_md5(from._internal_md5());
+      } else {
+        if (_this->_impl_.md5_.IsDefault()) {
+          _this->_internal_set_md5("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
       if (from._internal_type() != 0) {
         _this->_impl_.type_ = from._impl_.type_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (from._internal_status() != 0) {
         _this->_impl_.status_ = from._impl_.status_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
       if (from._internal_eof() != 0) {
         _this->_impl_.eof_ = from._impl_.eof_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x00000700U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000100U)) {
       if (from._internal_offset() != 0) {
         _this->_impl_.offset_ = from._impl_.offset_;
       }
     }
-  }
-  if (CheckHasBit(cached_has_bits, 0x00000100U)) {
-    if (from._internal_chunk_size() != 0) {
-      _this->_impl_.chunk_size_ = from._impl_.chunk_size_;
+    if (CheckHasBit(cached_has_bits, 0x00000200U)) {
+      if (from._internal_filesize() != 0) {
+        _this->_impl_.filesize_ = from._impl_.filesize_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000400U)) {
+      if (from._internal_chunk_size() != 0) {
+        _this->_impl_.chunk_size_ = from._impl_.chunk_size_;
+      }
     }
   }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
@@ -1976,6 +2052,7 @@ void FileResponse::InternalSwap(FileResponse* PROTOBUF_RESTRICT PROTOBUF_NONNULL
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.message_, &other->_impl_.message_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.clientid_, &other->_impl_.clientid_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.data_, &other->_impl_.data_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.md5_, &other->_impl_.md5_, arena);
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(FileResponse, _impl_.chunk_size_)
       + sizeof(FileResponse::_impl_.chunk_size_)

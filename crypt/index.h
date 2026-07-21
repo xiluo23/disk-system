@@ -33,15 +33,15 @@ public:
     void handle_rename(const FileResponse&);
     void handle_mkdir(const FileResponse&);
     void handle_uploadCheck(const FileResponse&);
-
+    void handle_downloadCheck(const FileResponse&);
 
     QString calcFileMd5(const QByteArray&);
     void downloadFile(int );
     void deleteFile(int);
     void renameFile(int);
 
-
     void sendNextChunk();
+    void sendDownLoadChunk();
     QString calcMd5(const QByteArray&);
     QString calcMd5(const QString&);
 private slots:
@@ -69,6 +69,13 @@ private:
     QFile* _uploadFile;
     quint64 _uploadOffset;
     QString _filemd5;
+
+    quint64 _downloadTotalSize;
+    QFile* _downloadFile;
+    quint64 _downloadOffset;
+    QProgressBar*_downloadProgress;
+    QString _downloadPath;
+    QString _downloadFilename;
 };
 
 #endif // INDEX_H

@@ -69,8 +69,8 @@ clean: CMakeFiles\test2_autogen.dir\clean
 # Target rules for target CMakeFiles/test2.dir
 
 # All Build rule for target.
-CMakeFiles\test2.dir\all: CMakeFiles\test2_autogen_timestamp_deps.dir\all
 CMakeFiles\test2.dir\all: CMakeFiles\test2_autogen.dir\all
+CMakeFiles\test2.dir\all: CMakeFiles\test2_autogen_timestamp_deps.dir\all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\test2.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\test2.dir\depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\test2.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\test2.dir\build
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\code\qt\crypt\build\Desktop_Qt_6_11_1_MSVC2022_64bit_Debug\CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14 "Built target test2"
