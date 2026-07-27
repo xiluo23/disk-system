@@ -27,6 +27,12 @@ qt_add_executable(test2
     Login.pb.h Login.pb.cc
     File.pb.cc File.pb.h
     codec.h codec.cpp
+    uploadmanager.h uploadmanager.cpp
+
+    uploadtask.h uploadtask.cpp
+    ChunkTask.h
+    downloadmanager.h downloadmanager.cpp
+    downtask.h downtask.cpp
 )
 
 target_link_libraries(test2 PRIVATE

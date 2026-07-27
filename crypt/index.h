@@ -2,7 +2,6 @@
 #define INDEX_H
 #include "ui_index.h"
 #include"File.pb.h"
-#include"codec.h"
 #include<QFile>
 #include<QFileDialog>
 #include <QMainWindow>
@@ -13,7 +12,9 @@
 #include <QCryptographicHash>
 #include<QInputDialog>
 #include<QProgressBar>
-const int CHUNK_SIZE=1024*1024; //1MB
+#include"uploadmanager.h"
+#include"downloadmanager.h"
+#include"codec.h"
 
 namespace Ui {
 class index;
@@ -24,7 +25,7 @@ class index : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit index(Secmng*&secmng,QString&token,QString&clientid,QWidget *parent = nullptr);
+    explicit index(Secmng*secmng,QString&token,QString&clientid,QWidget *parent = nullptr);
     ~index();
     void handle_upload(const FileResponse&);
     void handleList(const FileResponse&);
@@ -35,12 +36,10 @@ public:
     void handle_uploadCheck(const FileResponse&);
     void handle_downloadCheck(const FileResponse&);
 
-    QString calcFileMd5(const QByteArray&);
     void downloadFile(int );
     void deleteFile(int);
     void renameFile(int);
 
-    void sendNextChunk();
     void sendDownLoadChunk();
     QString calcMd5(const QByteArray&);
     QString calcMd5(const QString&);
@@ -53,6 +52,12 @@ private slots:
     void on_backButton_clicked();
     void onTableDoubleClicked(int );
     void updatePath();
+    void updateUploadProgress(int );
+    void upLoadFinish();
+    void upLoadFail();
+    void downdloadFinish();
+    void downloadFail();
+    void updateDownloadProgress(int value);
 private:
     Ui::index *ui;
     Secmng* _secmng;//密钥协商
@@ -62,18 +67,18 @@ private:
     QByteArray recvBuffer_;
     QString _currentPath;
 
-    QProgressBar*_uploadProgress;
-    quint64 _uploadTotalSize ;
-    quint64 _uploadBytes;
-    QString _uploadFileName;
-    QFile* _uploadFile;
-    quint64 _uploadOffset;
+    UploadManager*_uploadManager;
+    QProgressBar* _uploadProgress;
+    QString _currentUploadFile;
     QString _filemd5;
 
+
+    DownloadManager*_downloadManager;
+    QProgressBar* _downloadProgress;
+    QString _currentDownloadFile;
     quint64 _downloadTotalSize;
     QFile* _downloadFile;
     quint64 _downloadOffset;
-    QProgressBar*_downloadProgress;
     QString _downloadPath;
     QString _downloadFilename;
 };

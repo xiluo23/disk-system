@@ -318,6 +318,86 @@ CMakeFiles\test2.dir\codec.cpp.s: cmake_force
  /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\test2.dir\codec.cpp.s /c D:\code\qt\crypt\codec.cpp
 <<
 
+CMakeFiles\test2.dir\uploadmanager.cpp.obj: CMakeFiles\test2.dir\flags.make
+CMakeFiles\test2.dir\uploadmanager.cpp.obj: D:\code\qt\crypt\uploadmanager.cpp
+CMakeFiles\test2.dir\uploadmanager.cpp.obj: CMakeFiles\test2.dir\compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\code\qt\crypt\build\Desktop_Qt_6_11_1_MSVC2022_64bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/test2.dir/uploadmanager.cpp.obj"
+	$(CMAKE_COMMAND) -E cmake_cl_compile_depends --dep-file=CMakeFiles\test2.dir\uploadmanager.cpp.obj.d --working-dir=D:\code\qt\crypt\build\Desktop_Qt_6_11_1_MSVC2022_64bit_Debug --filter-prefix="注意: 包含文件:  " -- D:\VISUAL~1\VC\Tools\MSVC\1451~1.362\bin\HostX64\x64\cl.exe @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /showIncludes /FoCMakeFiles\test2.dir\uploadmanager.cpp.obj /FdCMakeFiles\test2.dir\ /FS -c D:\code\qt\crypt\uploadmanager.cpp
+<<
+
+CMakeFiles\test2.dir\uploadmanager.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/test2.dir/uploadmanager.cpp.i"
+	D:\VISUAL~1\VC\Tools\MSVC\1451~1.362\bin\HostX64\x64\cl.exe > CMakeFiles\test2.dir\uploadmanager.cpp.i @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\code\qt\crypt\uploadmanager.cpp
+<<
+
+CMakeFiles\test2.dir\uploadmanager.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/test2.dir/uploadmanager.cpp.s"
+	D:\VISUAL~1\VC\Tools\MSVC\1451~1.362\bin\HostX64\x64\cl.exe @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\test2.dir\uploadmanager.cpp.s /c D:\code\qt\crypt\uploadmanager.cpp
+<<
+
+CMakeFiles\test2.dir\uploadtask.cpp.obj: CMakeFiles\test2.dir\flags.make
+CMakeFiles\test2.dir\uploadtask.cpp.obj: D:\code\qt\crypt\uploadtask.cpp
+CMakeFiles\test2.dir\uploadtask.cpp.obj: CMakeFiles\test2.dir\compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\code\qt\crypt\build\Desktop_Qt_6_11_1_MSVC2022_64bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/test2.dir/uploadtask.cpp.obj"
+	$(CMAKE_COMMAND) -E cmake_cl_compile_depends --dep-file=CMakeFiles\test2.dir\uploadtask.cpp.obj.d --working-dir=D:\code\qt\crypt\build\Desktop_Qt_6_11_1_MSVC2022_64bit_Debug --filter-prefix="注意: 包含文件:  " -- D:\VISUAL~1\VC\Tools\MSVC\1451~1.362\bin\HostX64\x64\cl.exe @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /showIncludes /FoCMakeFiles\test2.dir\uploadtask.cpp.obj /FdCMakeFiles\test2.dir\ /FS -c D:\code\qt\crypt\uploadtask.cpp
+<<
+
+CMakeFiles\test2.dir\uploadtask.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/test2.dir/uploadtask.cpp.i"
+	D:\VISUAL~1\VC\Tools\MSVC\1451~1.362\bin\HostX64\x64\cl.exe > CMakeFiles\test2.dir\uploadtask.cpp.i @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\code\qt\crypt\uploadtask.cpp
+<<
+
+CMakeFiles\test2.dir\uploadtask.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/test2.dir/uploadtask.cpp.s"
+	D:\VISUAL~1\VC\Tools\MSVC\1451~1.362\bin\HostX64\x64\cl.exe @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\test2.dir\uploadtask.cpp.s /c D:\code\qt\crypt\uploadtask.cpp
+<<
+
+CMakeFiles\test2.dir\downloadmanager.cpp.obj: CMakeFiles\test2.dir\flags.make
+CMakeFiles\test2.dir\downloadmanager.cpp.obj: D:\code\qt\crypt\downloadmanager.cpp
+CMakeFiles\test2.dir\downloadmanager.cpp.obj: CMakeFiles\test2.dir\compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\code\qt\crypt\build\Desktop_Qt_6_11_1_MSVC2022_64bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/test2.dir/downloadmanager.cpp.obj"
+	$(CMAKE_COMMAND) -E cmake_cl_compile_depends --dep-file=CMakeFiles\test2.dir\downloadmanager.cpp.obj.d --working-dir=D:\code\qt\crypt\build\Desktop_Qt_6_11_1_MSVC2022_64bit_Debug --filter-prefix="注意: 包含文件:  " -- D:\VISUAL~1\VC\Tools\MSVC\1451~1.362\bin\HostX64\x64\cl.exe @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /showIncludes /FoCMakeFiles\test2.dir\downloadmanager.cpp.obj /FdCMakeFiles\test2.dir\ /FS -c D:\code\qt\crypt\downloadmanager.cpp
+<<
+
+CMakeFiles\test2.dir\downloadmanager.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/test2.dir/downloadmanager.cpp.i"
+	D:\VISUAL~1\VC\Tools\MSVC\1451~1.362\bin\HostX64\x64\cl.exe > CMakeFiles\test2.dir\downloadmanager.cpp.i @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\code\qt\crypt\downloadmanager.cpp
+<<
+
+CMakeFiles\test2.dir\downloadmanager.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/test2.dir/downloadmanager.cpp.s"
+	D:\VISUAL~1\VC\Tools\MSVC\1451~1.362\bin\HostX64\x64\cl.exe @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\test2.dir\downloadmanager.cpp.s /c D:\code\qt\crypt\downloadmanager.cpp
+<<
+
+CMakeFiles\test2.dir\downtask.cpp.obj: CMakeFiles\test2.dir\flags.make
+CMakeFiles\test2.dir\downtask.cpp.obj: D:\code\qt\crypt\downtask.cpp
+CMakeFiles\test2.dir\downtask.cpp.obj: CMakeFiles\test2.dir\compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\code\qt\crypt\build\Desktop_Qt_6_11_1_MSVC2022_64bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/test2.dir/downtask.cpp.obj"
+	$(CMAKE_COMMAND) -E cmake_cl_compile_depends --dep-file=CMakeFiles\test2.dir\downtask.cpp.obj.d --working-dir=D:\code\qt\crypt\build\Desktop_Qt_6_11_1_MSVC2022_64bit_Debug --filter-prefix="注意: 包含文件:  " -- D:\VISUAL~1\VC\Tools\MSVC\1451~1.362\bin\HostX64\x64\cl.exe @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /showIncludes /FoCMakeFiles\test2.dir\downtask.cpp.obj /FdCMakeFiles\test2.dir\ /FS -c D:\code\qt\crypt\downtask.cpp
+<<
+
+CMakeFiles\test2.dir\downtask.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/test2.dir/downtask.cpp.i"
+	D:\VISUAL~1\VC\Tools\MSVC\1451~1.362\bin\HostX64\x64\cl.exe > CMakeFiles\test2.dir\downtask.cpp.i @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\code\qt\crypt\downtask.cpp
+<<
+
+CMakeFiles\test2.dir\downtask.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/test2.dir/downtask.cpp.s"
+	D:\VISUAL~1\VC\Tools\MSVC\1451~1.362\bin\HostX64\x64\cl.exe @<<
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\test2.dir\downtask.cpp.s /c D:\code\qt\crypt\downtask.cpp
+<<
+
 # Object files for target test2
 test2_OBJECTS = \
 "CMakeFiles\test2.dir\test2_autogen\mocs_compilation.cpp.obj" \
@@ -332,7 +412,11 @@ test2_OBJECTS = \
 "CMakeFiles\test2.dir\index.cpp.obj" \
 "CMakeFiles\test2.dir\Login.pb.cc.obj" \
 "CMakeFiles\test2.dir\File.pb.cc.obj" \
-"CMakeFiles\test2.dir\codec.cpp.obj"
+"CMakeFiles\test2.dir\codec.cpp.obj" \
+"CMakeFiles\test2.dir\uploadmanager.cpp.obj" \
+"CMakeFiles\test2.dir\uploadtask.cpp.obj" \
+"CMakeFiles\test2.dir\downloadmanager.cpp.obj" \
+"CMakeFiles\test2.dir\downtask.cpp.obj"
 
 # External object files for target test2
 test2_EXTERNAL_OBJECTS =
@@ -350,6 +434,10 @@ test2.exe: CMakeFiles\test2.dir\index.cpp.obj
 test2.exe: CMakeFiles\test2.dir\Login.pb.cc.obj
 test2.exe: CMakeFiles\test2.dir\File.pb.cc.obj
 test2.exe: CMakeFiles\test2.dir\codec.cpp.obj
+test2.exe: CMakeFiles\test2.dir\uploadmanager.cpp.obj
+test2.exe: CMakeFiles\test2.dir\uploadtask.cpp.obj
+test2.exe: CMakeFiles\test2.dir\downloadmanager.cpp.obj
+test2.exe: CMakeFiles\test2.dir\downtask.cpp.obj
 test2.exe: CMakeFiles\test2.dir\build.make
 test2.exe: D:\qt\6.11.1\msvc2022_64\lib\Qt6Widgetsd.lib
 test2.exe: D:\qt\6.11.1\msvc2022_64\lib\Qt6Networkd.lib
@@ -364,7 +452,7 @@ test2.exe: D:\vcpkg-master\installed\x64-windows\debug\lib\abseil_dll.lib
 test2.exe: D:\vcpkg-master\installed\x64-windows\debug\lib\libcrypto.lib
 test2.exe: test2.exe.manifest
 test2.exe: CMakeFiles\test2.dir\objects1.rsp
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=D:\code\qt\crypt\build\Desktop_Qt_6_11_1_MSVC2022_64bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Linking CXX executable test2.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=D:\code\qt\crypt\build\Desktop_Qt_6_11_1_MSVC2022_64bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Linking CXX executable test2.exe"
 	D:\qt\Tools\CMake_64\bin\cmake.exe -E vs_link_exe --intdir=CMakeFiles\test2.dir --rc=D:\WINDOW~1\10\bin\100261~1.0\x64\rc.exe --mt=D:\WINDOW~1\10\bin\100261~1.0\x64\mt.exe --manifests test2.exe.manifest -- D:\VISUAL~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\link.exe /nologo @CMakeFiles\test2.dir\objects1.rsp @<<
  /out:test2.exe /implib:test2.lib /pdb:D:\code\qt\crypt\build\Desktop_Qt_6_11_1_MSVC2022_64bit_Debug\test2.pdb /version:0.0 /machine:x64 /debug /INCREMENTAL /subsystem:windows /MANIFEST:NO  D:\qt\6.11.1\msvc2022_64\lib\Qt6Widgetsd.lib D:\qt\6.11.1\msvc2022_64\lib\Qt6Networkd.lib D:\vcpkg-master\installed\x64-windows\debug\lib\libprotobufd.lib D:\vcpkg-master\installed\x64-windows\debug\lib\libcrypto.lib D:\vcpkg-master\installed\x64-windows\debug\lib\libssl.lib D:\qt\6.11.1\msvc2022_64\lib\Qt6Guid.lib d3d11.lib dxgi.lib dxguid.lib d3d12.lib D:\qt\6.11.1\msvc2022_64\lib\Qt6Cored.lib mpr.lib userenv.lib D:\qt\6.11.1\msvc2022_64\lib\Qt6EntryPointd.lib shell32.lib ws2_32.lib D:\vcpkg-master\installed\x64-windows\debug\lib\utf8_validity.lib D:\vcpkg-master\installed\x64-windows\debug\lib\abseil_dll.lib -ignore:4221 D:\vcpkg-master\installed\x64-windows\debug\lib\libcrypto.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib 
 <<

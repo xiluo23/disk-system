@@ -43,6 +43,7 @@ message FileRequest
     string path=13;
     
     bytes chunk_md5=14;
+    uint64 upload_id=15;
 }
 
 
@@ -69,5 +70,9 @@ message FileResponse
     bytes md5=11;
 
     uint64 filesize=12;
+
+    uint64 upload_id=13;
+
+    repeated uint32 finished_chunks=14;
 
 }

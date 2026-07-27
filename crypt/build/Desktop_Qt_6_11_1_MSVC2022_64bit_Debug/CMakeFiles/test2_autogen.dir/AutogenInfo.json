@@ -437,6 +437,12 @@
 	"HEADERS" : 
 	[
 		[
+			"D:/code/qt/crypt/ChunkTask.h",
+			"MU",
+			"EWIEGA46WW/moc_ChunkTask.cpp",
+			null
+		],
+		[
 			"D:/code/qt/crypt/File.pb.h",
 			"MU",
 			"EWIEGA46WW/moc_File.pb.cpp",
@@ -461,6 +467,18 @@
 			null
 		],
 		[ "D:/code/qt/crypt/codec.h", "MU", "EWIEGA46WW/moc_codec.cpp", null ],
+		[
+			"D:/code/qt/crypt/downloadmanager.h",
+			"MU",
+			"EWIEGA46WW/moc_downloadmanager.cpp",
+			null
+		],
+		[
+			"D:/code/qt/crypt/downtask.h",
+			"MU",
+			"EWIEGA46WW/moc_downtask.cpp",
+			null
+		],
 		[ "D:/code/qt/crypt/index.h", "MU", "EWIEGA46WW/moc_index.cpp", null ],
 		[
 			"D:/code/qt/crypt/mainwindow.h",
@@ -470,7 +488,19 @@
 		],
 		[ "D:/code/qt/crypt/myaes.h", "MU", "EWIEGA46WW/moc_myaes.cpp", null ],
 		[ "D:/code/qt/crypt/myrsa.h", "MU", "EWIEGA46WW/moc_myrsa.cpp", null ],
-		[ "D:/code/qt/crypt/secmng.h", "MU", "EWIEGA46WW/moc_secmng.cpp", null ]
+		[ "D:/code/qt/crypt/secmng.h", "MU", "EWIEGA46WW/moc_secmng.cpp", null ],
+		[
+			"D:/code/qt/crypt/uploadmanager.h",
+			"MU",
+			"EWIEGA46WW/moc_uploadmanager.cpp",
+			null
+		],
+		[
+			"D:/code/qt/crypt/uploadtask.h",
+			"MU",
+			"EWIEGA46WW/moc_uploadtask.cpp",
+			null
+		]
 	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
 	"INCLUDE_DIR" : "D:/code/qt/crypt/build/Desktop_Qt_6_11_1_MSVC2022_64bit_Debug/test2_autogen/include",
@@ -538,13 +568,17 @@
 		[ "D:/code/qt/crypt/Request.pb.cc", "MU", null ],
 		[ "D:/code/qt/crypt/Response.pb.cc", "MU", null ],
 		[ "D:/code/qt/crypt/codec.cpp", "MU", null ],
+		[ "D:/code/qt/crypt/downloadmanager.cpp", "MU", null ],
+		[ "D:/code/qt/crypt/downtask.cpp", "MU", null ],
 		[ "D:/code/qt/crypt/index.cpp", "MU", null ],
 		[ "D:/code/qt/crypt/main.cpp", "MU", null ],
 		[ "D:/code/qt/crypt/mainwindow.cpp", "MU", null ],
 		[ "D:/code/qt/crypt/myaes.cpp", "MU", null ],
 		[ "D:/code/qt/crypt/myrsa.cpp", "MU", null ],
 		[ "D:/code/qt/crypt/openssl_applink.cpp", "MU", null ],
-		[ "D:/code/qt/crypt/secmng.cpp", "MU", null ]
+		[ "D:/code/qt/crypt/secmng.cpp", "MU", null ],
+		[ "D:/code/qt/crypt/uploadmanager.cpp", "MU", null ],
+		[ "D:/code/qt/crypt/uploadtask.cpp", "MU", null ]
 	],
 	"UIC_OPTIONS" : [],
 	"UIC_SEARCH_PATHS" : [],

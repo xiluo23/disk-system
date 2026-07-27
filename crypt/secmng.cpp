@@ -1,5 +1,9 @@
 #include "secmng.h"
 
+std::string Secmng::getKey(){
+    return std::string(reinterpret_cast<const char*>(aes_->getKey()),aes_->getKeyLength());
+}
+
 Secmng::Secmng(QObject*parent):QObject(parent),nonce_(1),seckeyid_(1) {
     rsa_=new MyRSA;
     rsa_->generate_key(2048);//256byte

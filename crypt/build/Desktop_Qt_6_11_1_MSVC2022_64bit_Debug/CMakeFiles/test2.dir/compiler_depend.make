@@ -11,6 +11,10 @@ CMakeFiles\test2.dir\Response.pb.cc.obj: D:\code\qt\crypt\Response.pb.cc
 
 CMakeFiles\test2.dir\codec.cpp.obj: D:\code\qt\crypt\codec.cpp
 
+CMakeFiles\test2.dir\downloadmanager.cpp.obj: D:\code\qt\crypt\downloadmanager.cpp
+
+CMakeFiles\test2.dir\downtask.cpp.obj: D:\code\qt\crypt\downtask.cpp
+
 CMakeFiles\test2.dir\index.cpp.obj: D:\code\qt\crypt\index.cpp
 
 CMakeFiles\test2.dir\main.cpp.obj: D:\code\qt\crypt\main.cpp
@@ -27,8 +31,10 @@ CMakeFiles\test2.dir\secmng.cpp.obj: D:\code\qt\crypt\secmng.cpp
 
 CMakeFiles\test2.dir\test2_autogen\mocs_compilation.cpp.obj: test2_autogen\mocs_compilation.cpp
 
+CMakeFiles\test2.dir\uploadmanager.cpp.obj: D:\code\qt\crypt\uploadmanager.cpp
 
-D:\code\qt\crypt\main.cpp:
+CMakeFiles\test2.dir\uploadtask.cpp.obj: D:\code\qt\crypt\uploadtask.cpp
+
 
 D:\code\qt\crypt\File.pb.cc:
 
@@ -42,7 +48,13 @@ D:\code\qt\crypt\Login.pb.cc:
 
 D:\code\qt\crypt\Request.pb.cc:
 
+D:\code\qt\crypt\downtask.cpp:
+
+D:\code\qt\crypt\downloadmanager.cpp:
+
 D:\code\qt\crypt\index.cpp:
+
+D:\code\qt\crypt\main.cpp:
 
 D:\code\qt\crypt\mainwindow.cpp:
 
@@ -53,3 +65,7 @@ D:\code\qt\crypt\myrsa.cpp:
 D:\code\qt\crypt\secmng.cpp:
 
 test2_autogen\mocs_compilation.cpp:
+
+D:\code\qt\crypt\uploadmanager.cpp:
+
+D:\code\qt\crypt\uploadtask.cpp:

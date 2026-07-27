@@ -297,6 +297,54 @@ codec.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\test2.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\test2.dir\codec.cpp.s
 .PHONY : codec.cpp.s
 
+downloadmanager.obj: downloadmanager.cpp.obj
+.PHONY : downloadmanager.obj
+
+# target to build an object file
+downloadmanager.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\test2.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\test2.dir\downloadmanager.cpp.obj
+.PHONY : downloadmanager.cpp.obj
+
+downloadmanager.i: downloadmanager.cpp.i
+.PHONY : downloadmanager.i
+
+# target to preprocess a source file
+downloadmanager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\test2.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\test2.dir\downloadmanager.cpp.i
+.PHONY : downloadmanager.cpp.i
+
+downloadmanager.s: downloadmanager.cpp.s
+.PHONY : downloadmanager.s
+
+# target to generate assembly for a file
+downloadmanager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\test2.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\test2.dir\downloadmanager.cpp.s
+.PHONY : downloadmanager.cpp.s
+
+downtask.obj: downtask.cpp.obj
+.PHONY : downtask.obj
+
+# target to build an object file
+downtask.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\test2.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\test2.dir\downtask.cpp.obj
+.PHONY : downtask.cpp.obj
+
+downtask.i: downtask.cpp.i
+.PHONY : downtask.i
+
+# target to preprocess a source file
+downtask.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\test2.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\test2.dir\downtask.cpp.i
+.PHONY : downtask.cpp.i
+
+downtask.s: downtask.cpp.s
+.PHONY : downtask.s
+
+# target to generate assembly for a file
+downtask.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\test2.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\test2.dir\downtask.cpp.s
+.PHONY : downtask.cpp.s
+
 index.obj: index.cpp.obj
 .PHONY : index.obj
 
@@ -489,6 +537,54 @@ test2_autogen\mocs_compilation.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\test2.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\test2.dir\test2_autogen\mocs_compilation.cpp.s
 .PHONY : test2_autogen\mocs_compilation.cpp.s
 
+uploadmanager.obj: uploadmanager.cpp.obj
+.PHONY : uploadmanager.obj
+
+# target to build an object file
+uploadmanager.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\test2.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\test2.dir\uploadmanager.cpp.obj
+.PHONY : uploadmanager.cpp.obj
+
+uploadmanager.i: uploadmanager.cpp.i
+.PHONY : uploadmanager.i
+
+# target to preprocess a source file
+uploadmanager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\test2.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\test2.dir\uploadmanager.cpp.i
+.PHONY : uploadmanager.cpp.i
+
+uploadmanager.s: uploadmanager.cpp.s
+.PHONY : uploadmanager.s
+
+# target to generate assembly for a file
+uploadmanager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\test2.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\test2.dir\uploadmanager.cpp.s
+.PHONY : uploadmanager.cpp.s
+
+uploadtask.obj: uploadtask.cpp.obj
+.PHONY : uploadtask.obj
+
+# target to build an object file
+uploadtask.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\test2.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\test2.dir\uploadtask.cpp.obj
+.PHONY : uploadtask.cpp.obj
+
+uploadtask.i: uploadtask.cpp.i
+.PHONY : uploadtask.i
+
+# target to preprocess a source file
+uploadtask.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\test2.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\test2.dir\uploadtask.cpp.i
+.PHONY : uploadtask.cpp.i
+
+uploadtask.s: uploadtask.cpp.s
+.PHONY : uploadtask.s
+
+# target to generate assembly for a file
+uploadtask.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\test2.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\test2.dir\uploadtask.cpp.s
+.PHONY : uploadtask.cpp.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -518,6 +614,12 @@ help:
 	@echo ... codec.obj
 	@echo ... codec.i
 	@echo ... codec.s
+	@echo ... downloadmanager.obj
+	@echo ... downloadmanager.i
+	@echo ... downloadmanager.s
+	@echo ... downtask.obj
+	@echo ... downtask.i
+	@echo ... downtask.s
 	@echo ... index.obj
 	@echo ... index.i
 	@echo ... index.s
@@ -542,6 +644,12 @@ help:
 	@echo ... test2_autogen/mocs_compilation.obj
 	@echo ... test2_autogen/mocs_compilation.i
 	@echo ... test2_autogen/mocs_compilation.s
+	@echo ... uploadmanager.obj
+	@echo ... uploadmanager.i
+	@echo ... uploadmanager.s
+	@echo ... uploadtask.obj
+	@echo ... uploadtask.i
+	@echo ... uploadtask.s
 .PHONY : help
 
 

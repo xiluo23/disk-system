@@ -31,6 +31,7 @@ public:
     void set_clientid(QString clientid);
     void setToken(QString token);
     std::string getIV();
+    std::string getKey();
 signals:
     void agreeSuccess();
 private slots:

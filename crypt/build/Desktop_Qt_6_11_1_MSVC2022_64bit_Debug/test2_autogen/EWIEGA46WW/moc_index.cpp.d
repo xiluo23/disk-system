@@ -23,6 +23,7 @@ D:/code/qt/crypt/build/Desktop_Qt_6_11_1_MSVC2022_64bit_Debug/test2_autogen/EWIE
   D:/Visual\ Studio/VC/Tools/MSVC/14.51.36231/include/forward_list \
   D:/Visual\ Studio/VC/Tools/MSVC/14.51.36231/include/fstream \
   D:/Visual\ Studio/VC/Tools/MSVC/14.51.36231/include/functional \
+  D:/Visual\ Studio/VC/Tools/MSVC/14.51.36231/include/future \
   D:/Visual\ Studio/VC/Tools/MSVC/14.51.36231/include/initializer_list \
   D:/Visual\ Studio/VC/Tools/MSVC/14.51.36231/include/intrin.h \
   D:/Visual\ Studio/VC/Tools/MSVC/14.51.36231/include/ios \
@@ -233,17 +234,28 @@ D:/code/qt/crypt/build/Desktop_Qt_6_11_1_MSVC2022_64bit_Debug/test2_autogen/EWIE
   D:/Windows\ Kits/10/include/10.0.26100.0/um/winuser.h \
   D:/Windows\ Kits/10/include/10.0.26100.0/um/winver.h \
   D:/Windows\ Kits/10/include/10.0.26100.0/um/wow64apiset.h \
+  D:/code/qt/crypt/ChunkTask.h \
   D:/code/qt/crypt/File.pb.h \
   D:/code/qt/crypt/Request.pb.h \
   D:/code/qt/crypt/Response.pb.h \
   D:/code/qt/crypt/codec.h \
+  D:/code/qt/crypt/downloadmanager.h \
+  D:/code/qt/crypt/downtask.h \
   D:/code/qt/crypt/myaes.h \
   D:/code/qt/crypt/myrsa.h \
   D:/code/qt/crypt/secmng.h \
+  D:/code/qt/crypt/uploadmanager.h \
+  D:/code/qt/crypt/uploadtask.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/QCryptographicHash \
+  D:/qt/6.11.1/msvc2022_64/include/QtCore/QDebug \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/QFile \
+  D:/qt/6.11.1/msvc2022_64/include/QtCore/QFileInfo \
+  D:/qt/6.11.1/msvc2022_64/include/QtCore/QMutex \
+  D:/qt/6.11.1/msvc2022_64/include/QtCore/QObject \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/QRandomGenerator \
+  D:/qt/6.11.1/msvc2022_64/include/QtCore/QRunnable \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/QString \
+  D:/qt/6.11.1/msvc2022_64/include/QtCore/QThreadPool \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/QTimer \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/q17memory.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/q20bit.h \
@@ -324,6 +336,7 @@ D:/code/qt/crypt/build/Desktop_Qt_6_11_1_MSVC2022_64bit_Debug/test2_autogen/EWIE
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qmetacontainer.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qmetatype.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qminmax.h \
+  D:/qt/6.11.1/msvc2022_64/include/QtCore/qmutex.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qnamespace.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qnumeric.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qobject.h \
@@ -337,6 +350,7 @@ D:/code/qt/crypt/build/Desktop_Qt_6_11_1_MSVC2022_64bit_Debug/test2_autogen/EWIE
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qrandom.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qrect.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qrefcount.h \
+  D:/qt/6.11.1/msvc2022_64/include/QtCore/qrunnable.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qscopedpointer.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qscopeguard.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qset.h \
@@ -372,12 +386,15 @@ D:/code/qt/crypt/build/Desktop_Qt_6_11_1_MSVC2022_64bit_Debug/test2_autogen/EWIE
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qtenvironmentvariables.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qtextstream.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qtformat_impl.h \
+  D:/qt/6.11.1/msvc2022_64/include/QtCore/qthread.h \
+  D:/qt/6.11.1/msvc2022_64/include/QtCore/qthreadpool.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qtimer.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qtimezone.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qtmetamacros.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qtnoop.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qtpreprocessorsupport.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qtresource.h \
+  D:/qt/6.11.1/msvc2022_64/include/QtCore/qtsan_impl.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qttranslation.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qttypetraits.h \
   D:/qt/6.11.1/msvc2022_64/include/QtCore/qtversion.h \

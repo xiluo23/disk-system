@@ -1,9 +1,8 @@
 #include "index.h"
 
-index::index(Secmng*&secmng,QString&token,QString&clientid,QWidget *parent)
+index::index(Secmng*secmng,QString&token,QString&clientid,QWidget *parent)
     : QMainWindow(parent),_secmng(secmng),_token(token),_clientId(clientid)
-    , ui(new Ui::index),_currentPath("/"),_uploadProgress(nullptr),
-    _uploadBytes(0),_uploadTotalSize(0),_uploadFile(nullptr)
+    , ui(new Ui::index),_currentPath("/")
 {
     this->setWindowTitle("FileDisk");
     this->setFixedHeight(600);
@@ -63,8 +62,70 @@ index::index(Secmng*&secmng,QString&token,QString&clientid,QWidget *parent)
             this,
             &index::onTableDoubleClicked);
     updatePath();
+
+    _uploadManager=new UploadManager(this);
+    connect(_uploadManager,
+            &UploadManager::progress,
+            this,
+            &index::updateUploadProgress);
+
+    connect(_uploadManager,&UploadManager::uploadFinished,this,&index::upLoadFinish);
+    connect(_uploadManager,&UploadManager::uploadFailed,this,&index::upLoadFail);
     _uploadProgress=new QProgressBar;
+
     _downloadProgress=new QProgressBar;
+    _downloadManager=new DownloadManager;
+
+    connect(_downloadManager,&DownloadManager::downloadFinished,this,&index::downdloadFinish);
+    connect(_downloadManager,&DownloadManager::downloadFailed,this,&index::downloadFail);
+    connect(_downloadManager,&DownloadManager::progress,this,&index::updateDownloadProgress);
+}
+void index::downdloadFinish(){
+    QMessageBox::information(
+        this,
+        "下载成功",
+        QString::fromStdString(
+            "success"
+            )
+        );
+    _downloadProgress->hide();
+}
+void index::downloadFail(){
+    QMessageBox::information(
+        this,
+        "下载失败",
+        QString::fromStdString(
+            "fail"
+            )
+        );
+    _downloadProgress->hide();
+}
+
+void index::updateDownloadProgress(int value){
+    _downloadProgress->setValue(value);
+}
+void index::upLoadFinish(){
+    QMessageBox::information(
+        this,
+        "上传成功",
+        QString::fromStdString(
+            "success"
+            )
+        );
+    _uploadProgress->hide();
+    on_FileList();
+}
+void index::upLoadFail(){
+    QMessageBox::warning(
+        this,
+        "上传失败",
+        QString::fromStdString(
+            "fail"
+            )
+        );
+}
+void index::updateUploadProgress(int value){
+    _uploadProgress->setValue(value);
 }
 QString fileType(const QString name,bool isDir){
     if (isDir)
@@ -177,34 +238,27 @@ index::~index()
     delete ui;
 }
 void index::handle_upload(const FileResponse&rsp){
-    if (rsp.status())
+    if(rsp.status())
     {
-        _uploadBytes+=rsp.chunk_size();
-        int value =
-            static_cast<int>(
-                (_uploadBytes * 100)
-                /
-                _uploadTotalSize
-                );
-        _uploadOffset += rsp.chunk_size();
-        _uploadProgress->setValue(value);
-        if(rsp.eof()){
-            QMessageBox::information(this,
-                                 "上传成功",
-                                 QString::fromStdString(rsp.message()));
-            _uploadProgress->hide();
-            _uploadFile->close();
-            // 刷新文件列表
-            on_FileList();
-        }
-        else{
-            sendNextChunk();
-        }
+        QMessageBox::information(
+            this,
+            "上传成功",
+            QString::fromStdString(
+                rsp.message()
+                )
+            );
+        _uploadProgress->hide();
+        on_FileList();
     }
     else
     {
-        qDebug()<<"this chunk send fail";
-        sendNextChunk();
+        QMessageBox::warning(
+            this,
+            "上传失败",
+            QString::fromStdString(
+                rsp.message()
+                )
+            );
     }
 }
 
@@ -291,10 +345,9 @@ void index::handle_downloadCheck(const FileResponse&rsp){
             QString::fromStdString(rsp.message()));
         return;
     }
-    qDebug()<<"recv downloadcheck rsp";
     _downloadTotalSize = rsp.filesize();
     std::string filename=rsp.files().at(0).filename();
-    _downloadFilename=QString::fromStdString(filename);
+    QString downloadFilename=QString::fromStdString(filename);
     QString savePath =
         QFileDialog::getSaveFileName(
             this,
@@ -304,49 +357,17 @@ void index::handle_downloadCheck(const FileResponse&rsp){
     if(savePath.isEmpty()){
         return ;
     }
-    _downloadFile =
-        new QFile(savePath,this);
-
-    /*
-        断点检查
-    */
-    uint64_t offset = 0;
-
-    if(QFile::exists(savePath))
-    {
-        QFileInfo info(savePath);
-
-        offset = info.size();
-    }
-
-    if(!_downloadFile->open(QIODevice::ReadWrite))
-    {
-        if(!_downloadFile->open(QIODevice::WriteOnly)){
-            QMessageBox::warning(
-                this,
-                "错误",
-                "创建文件失败");
-            return;
-        }
-    }
-
-    //定位写入位置
-    _downloadFile->seek(offset);
-
-    _downloadOffset = offset;
-
-    _downloadTotalSize=rsp.filesize();
+    QByteArray aesKey(_secmng->getKey());
+    QByteArray iv(_secmng->getIV());
+    _downloadManager->startDownload(downloadFilename,savePath,
+                                    _downloadTotalSize,_token,
+                                    iv,aesKey,_clientId,_downloadPath);
     // 创建进度条
     _downloadProgress->setRange(
         0,
         _downloadTotalSize);
-
-
-    _downloadProgress->setValue(
-        _downloadOffset);
+    _downloadProgress->setValue(0);
     _downloadProgress->show();
-    //请求下一块
-    sendDownLoadChunk();
 }
 
 void index::handle_download(const FileResponse&rsp){
@@ -429,21 +450,28 @@ void index::handle_uploadCheck(const FileResponse&rsp){
         QMessageBox::warning(this,
                              "上传成功",
                              QString::fromStdString(rsp.message()));
-        _uploadFile->close();
         on_FileList();
     }
     else{
-        _uploadBytes=rsp.offset();
-        _uploadOffset=rsp.offset();
-        int value =
-            static_cast<int>(
-                (_uploadBytes * 100)
-                /
-                _uploadTotalSize
-                );
-        _uploadProgress->setValue(value);
-        _uploadProgress->show();
-        sendNextChunk();
+        qint64 uploadId =
+            rsp.upload_id();
+        QVector<int> finishedChunks;
+        for(auto index:
+             rsp.finished_chunks())
+        {
+            finishedChunks.append(index);
+        }
+        QByteArray aesKey(_secmng->getKey());
+        _uploadManager->uploadFile(
+            _currentUploadFile,
+            uploadId,
+            finishedChunks,
+            _token,
+            _clientId,
+            aesKey,
+            _currentPath,
+            _filemd5
+            );
     }
 }
 void index::on_upLoad_clicked()
@@ -455,20 +483,21 @@ void index::on_upLoad_clicked()
             );
     if(fileName.isEmpty())
         return;
-    _uploadFile =
+    _currentUploadFile=fileName;
+    QFile* uploadFile =
         new QFile(fileName,this);
-    if(!_uploadFile->open(QIODevice::ReadOnly))
+    if(!uploadFile->open(QIODevice::ReadOnly))
     {
-        delete _uploadFile;
-        _uploadFile=nullptr;
+        delete uploadFile;
+        uploadFile=nullptr;
         return;
     }
-    _uploadFileName =
+    QString uploadFileName =
         QFileInfo(fileName).fileName();
-    _uploadTotalSize =_uploadFile->size();
-    _uploadOffset=0;
-    _uploadBytes=0;
+    int uploadTotalSize =uploadFile->size();
+
     _uploadProgress->setValue(0);
+    _uploadProgress->show();
     // 先检查是否秒传
     QString file_md5=calcMd5(fileName);
     _filemd5=file_md5;
@@ -479,17 +508,16 @@ void index::on_upLoad_clicked()
     req.set_token(_token.toStdString());
     req.set_md5(file_md5.toStdString());
     req.set_clientid(_clientId.toStdString());
-    req.set_filename(_uploadFileName.toStdString());
-    req.set_filesize(_uploadTotalSize);
+    req.set_filename(uploadFileName.toStdString());
+    req.set_filesize(uploadTotalSize);
     std::string packet =
         Codec::encode(req);
-
 
     _socket->write(
         packet.data(),
         packet.size()
         );
-
+    uploadFile->close();
 }
 QString index::calcMd5(const QString& filePath)
 {
@@ -544,7 +572,18 @@ QString index::calcMd5(const QString& filePath)
     }
     return md5;
 }
+QString index::calcMd5(const QByteArray&plain){
+    unsigned char md[MD5_DIGEST_LENGTH];
+    MD5((const unsigned char*)plain.data(),plain.size(),md);
+    char buf[33];
+    for(int i = 0; i < MD5_DIGEST_LENGTH; ++i)
+    {
+        sprintf(buf + i * 2, "%02x", md[i]);
+    }
 
+    buf[32] = '\0';
+    return QString(buf);
+}
 void index::sendDownLoadChunk(){
     FileRequest req;
     req.set_type(DOWNLOAD_FILE);
@@ -570,77 +609,7 @@ void index::sendDownLoadChunk(){
         packet.size()
         );
 }
-void index::sendNextChunk()
-{
-    if(!_uploadFile)
-        return;
-    QByteArray plain =
-        _uploadFile->read(CHUNK_SIZE);
-    if(plain.isEmpty())
-    {
-        return;
-    }
 
-    QByteArray cipher;
-
-    _secmng->encrypt(
-        plain,
-        cipher
-        );
-
-    FileRequest req;
-    req.set_type(UPLOAD_FILE);
-    QString chunk_md5=calcMd5(plain);
-    req.set_chunk_md5(chunk_md5.toStdString());
-    req.set_md5(_filemd5.toStdString());
-    req.set_clientid(
-        _clientId.toStdString()
-        );
-    req.set_token(
-        _token.toStdString()
-        );
-    req.set_filename(
-        _uploadFileName.toStdString()
-        );
-
-
-    req.set_path(
-        _currentPath.toStdString()
-        );
-
-
-    req.set_filesize(
-        _uploadTotalSize
-        );
-
-
-    req.set_offset(
-        _uploadOffset
-        );
-
-
-    req.set_chunk_size(
-        plain.size()
-        );
-
-    req.set_iv(_secmng->getIV());
-    bool is_eof=(_uploadBytes+plain.size()==_uploadTotalSize);
-    req.set_eof(is_eof);
-
-    req.set_data(
-        cipher.data(),
-        cipher.size()
-        );
-
-    std::string packet =
-        Codec::encode(req);
-
-
-    _socket->write(
-        packet.data(),
-        packet.size()
-        );
-}
 
 
 void index::on_FileList(){
@@ -664,18 +633,7 @@ void index::on_FileList(){
 
 
 }
-QString index::calcMd5(const QByteArray&plain){
-    unsigned char md[MD5_DIGEST_LENGTH];
-    MD5((const unsigned char*)plain.data(),plain.size(),md);
-    char buf[33];
-    for(int i = 0; i < MD5_DIGEST_LENGTH; ++i)
-    {
-        sprintf(buf + i * 2, "%02x", md[i]);
-    }
 
-    buf[32] = '\0';
-    return QString(buf);
-}
 
 void index::showContextMenu(
     const QPoint& pos)
@@ -824,18 +782,13 @@ void index::handleList(const FileResponse& rsp)
     }
 }
 
-
+//获取文件大小
 void index::downloadFile(int row)
 {
     QString filename =
         ui->tableWidget
             ->item(row,0)
             ->text();
-
-
-    qDebug()
-        <<"download:"
-        <<filename;
 
     //check
     FileRequest req;

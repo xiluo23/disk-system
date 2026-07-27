@@ -13,6 +13,8 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "D:/code/qt/crypt/Request.pb.cc" "CMakeFiles/test2.dir/Request.pb.cc.obj" "msvc" "CMakeFiles/test2.dir/Request.pb.cc.obj.d"
   "D:/code/qt/crypt/Response.pb.cc" "CMakeFiles/test2.dir/Response.pb.cc.obj" "msvc" "CMakeFiles/test2.dir/Response.pb.cc.obj.d"
   "D:/code/qt/crypt/codec.cpp" "CMakeFiles/test2.dir/codec.cpp.obj" "msvc" "CMakeFiles/test2.dir/codec.cpp.obj.d"
+  "D:/code/qt/crypt/downloadmanager.cpp" "CMakeFiles/test2.dir/downloadmanager.cpp.obj" "msvc" "CMakeFiles/test2.dir/downloadmanager.cpp.obj.d"
+  "D:/code/qt/crypt/downtask.cpp" "CMakeFiles/test2.dir/downtask.cpp.obj" "msvc" "CMakeFiles/test2.dir/downtask.cpp.obj.d"
   "D:/code/qt/crypt/index.cpp" "CMakeFiles/test2.dir/index.cpp.obj" "msvc" "CMakeFiles/test2.dir/index.cpp.obj.d"
   "D:/code/qt/crypt/main.cpp" "CMakeFiles/test2.dir/main.cpp.obj" "msvc" "CMakeFiles/test2.dir/main.cpp.obj.d"
   "D:/code/qt/crypt/mainwindow.cpp" "CMakeFiles/test2.dir/mainwindow.cpp.obj" "msvc" "CMakeFiles/test2.dir/mainwindow.cpp.obj.d"
@@ -21,6 +23,8 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "D:/code/qt/crypt/openssl_applink.cpp" "CMakeFiles/test2.dir/openssl_applink.cpp.obj" "msvc" "CMakeFiles/test2.dir/openssl_applink.cpp.obj.d"
   "D:/code/qt/crypt/secmng.cpp" "CMakeFiles/test2.dir/secmng.cpp.obj" "msvc" "CMakeFiles/test2.dir/secmng.cpp.obj.d"
   "D:/code/qt/crypt/build/Desktop_Qt_6_11_1_MSVC2022_64bit_Debug/test2_autogen/mocs_compilation.cpp" "CMakeFiles/test2.dir/test2_autogen/mocs_compilation.cpp.obj" "msvc" "CMakeFiles/test2.dir/test2_autogen/mocs_compilation.cpp.obj.d"
+  "D:/code/qt/crypt/uploadmanager.cpp" "CMakeFiles/test2.dir/uploadmanager.cpp.obj" "msvc" "CMakeFiles/test2.dir/uploadmanager.cpp.obj.d"
+  "D:/code/qt/crypt/uploadtask.cpp" "CMakeFiles/test2.dir/uploadtask.cpp.obj" "msvc" "CMakeFiles/test2.dir/uploadtask.cpp.obj.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

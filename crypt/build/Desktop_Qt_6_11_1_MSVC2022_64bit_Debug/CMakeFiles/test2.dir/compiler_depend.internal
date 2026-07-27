@@ -16,6 +16,12 @@ CMakeFiles/test2.dir/Response.pb.cc.obj
 CMakeFiles/test2.dir/codec.cpp.obj
  D:/code/qt/crypt/codec.cpp
 
+CMakeFiles/test2.dir/downloadmanager.cpp.obj
+ D:/code/qt/crypt/downloadmanager.cpp
+
+CMakeFiles/test2.dir/downtask.cpp.obj
+ D:/code/qt/crypt/downtask.cpp
+
 CMakeFiles/test2.dir/index.cpp.obj
  D:/code/qt/crypt/index.cpp
 
@@ -39,4 +45,10 @@ CMakeFiles/test2.dir/secmng.cpp.obj
 
 CMakeFiles/test2.dir/test2_autogen/mocs_compilation.cpp.obj
  D:/code/qt/crypt/build/Desktop_Qt_6_11_1_MSVC2022_64bit_Debug/test2_autogen/mocs_compilation.cpp
+
+CMakeFiles/test2.dir/uploadmanager.cpp.obj
+ D:/code/qt/crypt/uploadmanager.cpp
+
+CMakeFiles/test2.dir/uploadtask.cpp.obj
+ D:/code/qt/crypt/uploadtask.cpp
 

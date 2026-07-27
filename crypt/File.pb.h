@@ -279,6 +279,7 @@ class FileRequest final : public ::google::protobuf::Message
     kOffsetFieldNumber = 7,
     kEofFieldNumber = 8,
     kChunkSizeFieldNumber = 9,
+    kUploadIdFieldNumber = 15,
   };
   // string token = 2;
   void clear_token() ;
@@ -460,11 +461,21 @@ class FileRequest final : public ::google::protobuf::Message
   void _internal_set_chunk_size(::uint32_t value);
 
   public:
+  // uint64 upload_id = 15;
+  void clear_upload_id() ;
+  ::uint64_t upload_id() const;
+  void set_upload_id(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_upload_id() const;
+  void _internal_set_upload_id(::uint64_t value);
+
+  public:
   // @@protoc_insertion_point(class_scope:FileRequest)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<4, 14,
+  static const ::google::protobuf::internal::TcParseTable<4, 15,
                                    0, 53,
                                    2>
       _table_;
@@ -500,6 +511,7 @@ class FileRequest final : public ::google::protobuf::Message
     ::uint64_t offset_;
     bool eof_;
     ::uint32_t chunk_size_;
+    ::uint64_t upload_id_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -888,6 +900,7 @@ class FileResponse final : public ::google::protobuf::Message
   // accessors -------------------------------------------------------
   enum : int {
     kFilesFieldNumber = 9,
+    kFinishedChunksFieldNumber = 14,
     kMessageFieldNumber = 3,
     kClientIDFieldNumber = 4,
     kDataFieldNumber = 8,
@@ -897,6 +910,7 @@ class FileResponse final : public ::google::protobuf::Message
     kEofFieldNumber = 6,
     kOffsetFieldNumber = 5,
     kFilesizeFieldNumber = 12,
+    kUploadIdFieldNumber = 13,
     kChunkSizeFieldNumber = 10,
   };
   // repeated .FileItem files = 9;
@@ -916,6 +930,24 @@ class FileResponse final : public ::google::protobuf::Message
   const ::FileItem& files(int index) const;
   ::FileItem* PROTOBUF_NONNULL add_files();
   const ::google::protobuf::RepeatedPtrField<::FileItem>& files() const;
+  // repeated uint32 finished_chunks = 14;
+  int finished_chunks_size() const;
+  private:
+  int _internal_finished_chunks_size() const;
+
+  public:
+  void clear_finished_chunks() ;
+  ::uint32_t finished_chunks(int index) const;
+  void set_finished_chunks(int index, ::uint32_t value);
+  void add_finished_chunks(::uint32_t value);
+  const ::google::protobuf::RepeatedField<::uint32_t>& finished_chunks() const;
+  ::google::protobuf::RepeatedField<::uint32_t>* PROTOBUF_NONNULL mutable_finished_chunks();
+
+  private:
+  const ::google::protobuf::RepeatedField<::uint32_t>& _internal_finished_chunks() const;
+  ::google::protobuf::RepeatedField<::uint32_t>* PROTOBUF_NONNULL _internal_mutable_finished_chunks();
+
+  public:
   // string message = 3;
   void clear_message() ;
   const ::std::string& message() const;
@@ -1026,6 +1058,16 @@ class FileResponse final : public ::google::protobuf::Message
   void _internal_set_filesize(::uint64_t value);
 
   public:
+  // uint64 upload_id = 13;
+  void clear_upload_id() ;
+  ::uint64_t upload_id() const;
+  void set_upload_id(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_upload_id() const;
+  void _internal_set_upload_id(::uint64_t value);
+
+  public:
   // uint32 chunk_size = 10;
   void clear_chunk_size() ;
   ::uint32_t chunk_size() const;
@@ -1040,7 +1082,7 @@ class FileResponse final : public ::google::protobuf::Message
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<4, 11,
+  static const ::google::protobuf::internal::TcParseTable<4, 13,
                                    1, 44,
                                    2>
       _table_;
@@ -1063,6 +1105,8 @@ class FileResponse final : public ::google::protobuf::Message
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::google::protobuf::RepeatedPtrField< ::FileItem > files_;
+    ::google::protobuf::RepeatedField<::uint32_t> finished_chunks_;
+    ::google::protobuf::internal::CachedSize _finished_chunks_cached_byte_size_;
     ::google::protobuf::internal::ArenaStringPtr message_;
     ::google::protobuf::internal::ArenaStringPtr clientid_;
     ::google::protobuf::internal::ArenaStringPtr data_;
@@ -1072,6 +1116,7 @@ class FileResponse final : public ::google::protobuf::Message
     bool eof_;
     ::uint64_t offset_;
     ::uint64_t filesize_;
+    ::uint64_t upload_id_;
     ::uint32_t chunk_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -1951,6 +1996,31 @@ inline void FileRequest::set_allocated_chunk_md5(::std::string* PROTOBUF_NULLABL
   // @@protoc_insertion_point(field_set_allocated:FileRequest.chunk_md5)
 }
 
+// uint64 upload_id = 15;
+inline void FileRequest::clear_upload_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.upload_id_ = ::uint64_t{0u};
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00004000U);
+}
+inline ::uint64_t FileRequest::upload_id() const {
+  // @@protoc_insertion_point(field_get:FileRequest.upload_id)
+  return _internal_upload_id();
+}
+inline void FileRequest::set_upload_id(::uint64_t value) {
+  _internal_set_upload_id(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00004000U);
+  // @@protoc_insertion_point(field_set:FileRequest.upload_id)
+}
+inline ::uint64_t FileRequest::_internal_upload_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.upload_id_;
+}
+inline void FileRequest::_internal_set_upload_id(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.upload_id_ = value;
+}
+
 // -------------------------------------------------------------------
 
 // FileResponse
@@ -1960,7 +2030,7 @@ inline void FileResponse::clear_type() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.type_ = 0;
   ClearHasBit(_impl_._has_bits_[0],
-                  0x00000020U);
+                  0x00000040U);
 }
 inline ::CmdType FileResponse::type() const {
   // @@protoc_insertion_point(field_get:FileResponse.type)
@@ -1968,7 +2038,7 @@ inline ::CmdType FileResponse::type() const {
 }
 inline void FileResponse::set_type(::CmdType value) {
   _internal_set_type(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
   // @@protoc_insertion_point(field_set:FileResponse.type)
 }
 inline ::CmdType FileResponse::_internal_type() const {
@@ -1985,7 +2055,7 @@ inline void FileResponse::clear_status() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.status_ = false;
   ClearHasBit(_impl_._has_bits_[0],
-                  0x00000040U);
+                  0x00000080U);
 }
 inline bool FileResponse::status() const {
   // @@protoc_insertion_point(field_get:FileResponse.status)
@@ -1993,7 +2063,7 @@ inline bool FileResponse::status() const {
 }
 inline void FileResponse::set_status(bool value) {
   _internal_set_status(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
   // @@protoc_insertion_point(field_set:FileResponse.status)
 }
 inline bool FileResponse::_internal_status() const {
@@ -2010,7 +2080,7 @@ inline void FileResponse::clear_message() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.message_.ClearToEmpty();
   ClearHasBit(_impl_._has_bits_[0],
-                  0x00000002U);
+                  0x00000004U);
 }
 inline const ::std::string& FileResponse::message() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -2020,13 +2090,13 @@ inline const ::std::string& FileResponse::message() const
 template <typename Arg_, typename... Args_>
 PROTOBUF_ALWAYS_INLINE void FileResponse::set_message(Arg_&& arg, Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
   _impl_.message_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
   // @@protoc_insertion_point(field_set:FileResponse.message)
 }
 inline ::std::string* PROTOBUF_NONNULL FileResponse::mutable_message()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
   ::std::string* _s = _internal_mutable_message();
   // @@protoc_insertion_point(field_mutable:FileResponse.message)
   return _s;
@@ -2046,10 +2116,10 @@ inline ::std::string* PROTOBUF_NONNULL FileResponse::_internal_mutable_message()
 inline ::std::string* PROTOBUF_NULLABLE FileResponse::release_message() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   // @@protoc_insertion_point(field_release:FileResponse.message)
-  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000004U)) {
     return nullptr;
   }
-  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
   auto* released = _impl_.message_.Release();
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
     _impl_.message_.Set("", GetArena());
@@ -2059,9 +2129,9 @@ inline ::std::string* PROTOBUF_NULLABLE FileResponse::release_message() {
 inline void FileResponse::set_allocated_message(::std::string* PROTOBUF_NULLABLE value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (value != nullptr) {
-    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
   } else {
-    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
   }
   _impl_.message_.SetAllocated(value, GetArena());
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.message_.IsDefault()) {
@@ -2075,7 +2145,7 @@ inline void FileResponse::clear_clientid() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.clientid_.ClearToEmpty();
   ClearHasBit(_impl_._has_bits_[0],
-                  0x00000004U);
+                  0x00000008U);
 }
 inline const ::std::string& FileResponse::clientid() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -2085,13 +2155,13 @@ inline const ::std::string& FileResponse::clientid() const
 template <typename Arg_, typename... Args_>
 PROTOBUF_ALWAYS_INLINE void FileResponse::set_clientid(Arg_&& arg, Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
   _impl_.clientid_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
   // @@protoc_insertion_point(field_set:FileResponse.clientID)
 }
 inline ::std::string* PROTOBUF_NONNULL FileResponse::mutable_clientid()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
   ::std::string* _s = _internal_mutable_clientid();
   // @@protoc_insertion_point(field_mutable:FileResponse.clientID)
   return _s;
@@ -2111,10 +2181,10 @@ inline ::std::string* PROTOBUF_NONNULL FileResponse::_internal_mutable_clientid(
 inline ::std::string* PROTOBUF_NULLABLE FileResponse::release_clientid() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   // @@protoc_insertion_point(field_release:FileResponse.clientID)
-  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000004U)) {
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000008U)) {
     return nullptr;
   }
-  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
   auto* released = _impl_.clientid_.Release();
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
     _impl_.clientid_.Set("", GetArena());
@@ -2124,9 +2194,9 @@ inline ::std::string* PROTOBUF_NULLABLE FileResponse::release_clientid() {
 inline void FileResponse::set_allocated_clientid(::std::string* PROTOBUF_NULLABLE value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (value != nullptr) {
-    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+    SetHasBit(_impl_._has_bits_[0], 0x00000008U);
   } else {
-    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+    ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
   }
   _impl_.clientid_.SetAllocated(value, GetArena());
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.clientid_.IsDefault()) {
@@ -2140,7 +2210,7 @@ inline void FileResponse::clear_offset() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.offset_ = ::uint64_t{0u};
   ClearHasBit(_impl_._has_bits_[0],
-                  0x00000100U);
+                  0x00000200U);
 }
 inline ::uint64_t FileResponse::offset() const {
   // @@protoc_insertion_point(field_get:FileResponse.offset)
@@ -2148,7 +2218,7 @@ inline ::uint64_t FileResponse::offset() const {
 }
 inline void FileResponse::set_offset(::uint64_t value) {
   _internal_set_offset(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000100U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000200U);
   // @@protoc_insertion_point(field_set:FileResponse.offset)
 }
 inline ::uint64_t FileResponse::_internal_offset() const {
@@ -2165,7 +2235,7 @@ inline void FileResponse::clear_eof() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.eof_ = false;
   ClearHasBit(_impl_._has_bits_[0],
-                  0x00000080U);
+                  0x00000100U);
 }
 inline bool FileResponse::eof() const {
   // @@protoc_insertion_point(field_get:FileResponse.eof)
@@ -2173,7 +2243,7 @@ inline bool FileResponse::eof() const {
 }
 inline void FileResponse::set_eof(bool value) {
   _internal_set_eof(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000100U);
   // @@protoc_insertion_point(field_set:FileResponse.eof)
 }
 inline bool FileResponse::_internal_eof() const {
@@ -2190,7 +2260,7 @@ inline void FileResponse::clear_data() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.data_.ClearToEmpty();
   ClearHasBit(_impl_._has_bits_[0],
-                  0x00000008U);
+                  0x00000010U);
 }
 inline const ::std::string& FileResponse::data() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -2200,13 +2270,13 @@ inline const ::std::string& FileResponse::data() const
 template <typename Arg_, typename... Args_>
 PROTOBUF_ALWAYS_INLINE void FileResponse::set_data(Arg_&& arg, Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
   _impl_.data_.SetBytes(static_cast<Arg_&&>(arg), args..., GetArena());
   // @@protoc_insertion_point(field_set:FileResponse.data)
 }
 inline ::std::string* PROTOBUF_NONNULL FileResponse::mutable_data()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
   ::std::string* _s = _internal_mutable_data();
   // @@protoc_insertion_point(field_mutable:FileResponse.data)
   return _s;
@@ -2226,10 +2296,10 @@ inline ::std::string* PROTOBUF_NONNULL FileResponse::_internal_mutable_data() {
 inline ::std::string* PROTOBUF_NULLABLE FileResponse::release_data() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   // @@protoc_insertion_point(field_release:FileResponse.data)
-  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000008U)) {
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000010U)) {
     return nullptr;
   }
-  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
   auto* released = _impl_.data_.Release();
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
     _impl_.data_.Set("", GetArena());
@@ -2239,9 +2309,9 @@ inline ::std::string* PROTOBUF_NULLABLE FileResponse::release_data() {
 inline void FileResponse::set_allocated_data(::std::string* PROTOBUF_NULLABLE value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (value != nullptr) {
-    SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+    SetHasBit(_impl_._has_bits_[0], 0x00000010U);
   } else {
-    ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+    ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
   }
   _impl_.data_.SetAllocated(value, GetArena());
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.data_.IsDefault()) {
@@ -2311,7 +2381,7 @@ inline void FileResponse::clear_chunk_size() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.chunk_size_ = 0u;
   ClearHasBit(_impl_._has_bits_[0],
-                  0x00000400U);
+                  0x00001000U);
 }
 inline ::uint32_t FileResponse::chunk_size() const {
   // @@protoc_insertion_point(field_get:FileResponse.chunk_size)
@@ -2319,7 +2389,7 @@ inline ::uint32_t FileResponse::chunk_size() const {
 }
 inline void FileResponse::set_chunk_size(::uint32_t value) {
   _internal_set_chunk_size(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000400U);
+  SetHasBit(_impl_._has_bits_[0], 0x00001000U);
   // @@protoc_insertion_point(field_set:FileResponse.chunk_size)
 }
 inline ::uint32_t FileResponse::_internal_chunk_size() const {
@@ -2336,7 +2406,7 @@ inline void FileResponse::clear_md5() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.md5_.ClearToEmpty();
   ClearHasBit(_impl_._has_bits_[0],
-                  0x00000010U);
+                  0x00000020U);
 }
 inline const ::std::string& FileResponse::md5() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -2346,13 +2416,13 @@ inline const ::std::string& FileResponse::md5() const
 template <typename Arg_, typename... Args_>
 PROTOBUF_ALWAYS_INLINE void FileResponse::set_md5(Arg_&& arg, Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
   _impl_.md5_.SetBytes(static_cast<Arg_&&>(arg), args..., GetArena());
   // @@protoc_insertion_point(field_set:FileResponse.md5)
 }
 inline ::std::string* PROTOBUF_NONNULL FileResponse::mutable_md5()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
   ::std::string* _s = _internal_mutable_md5();
   // @@protoc_insertion_point(field_mutable:FileResponse.md5)
   return _s;
@@ -2372,10 +2442,10 @@ inline ::std::string* PROTOBUF_NONNULL FileResponse::_internal_mutable_md5() {
 inline ::std::string* PROTOBUF_NULLABLE FileResponse::release_md5() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   // @@protoc_insertion_point(field_release:FileResponse.md5)
-  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000010U)) {
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000020U)) {
     return nullptr;
   }
-  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
   auto* released = _impl_.md5_.Release();
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
     _impl_.md5_.Set("", GetArena());
@@ -2385,9 +2455,9 @@ inline ::std::string* PROTOBUF_NULLABLE FileResponse::release_md5() {
 inline void FileResponse::set_allocated_md5(::std::string* PROTOBUF_NULLABLE value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (value != nullptr) {
-    SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+    SetHasBit(_impl_._has_bits_[0], 0x00000020U);
   } else {
-    ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+    ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
   }
   _impl_.md5_.SetAllocated(value, GetArena());
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.md5_.IsDefault()) {
@@ -2401,7 +2471,7 @@ inline void FileResponse::clear_filesize() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.filesize_ = ::uint64_t{0u};
   ClearHasBit(_impl_._has_bits_[0],
-                  0x00000200U);
+                  0x00000400U);
 }
 inline ::uint64_t FileResponse::filesize() const {
   // @@protoc_insertion_point(field_get:FileResponse.filesize)
@@ -2409,7 +2479,7 @@ inline ::uint64_t FileResponse::filesize() const {
 }
 inline void FileResponse::set_filesize(::uint64_t value) {
   _internal_set_filesize(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000200U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000400U);
   // @@protoc_insertion_point(field_set:FileResponse.filesize)
 }
 inline ::uint64_t FileResponse::_internal_filesize() const {
@@ -2419,6 +2489,81 @@ inline ::uint64_t FileResponse::_internal_filesize() const {
 inline void FileResponse::_internal_set_filesize(::uint64_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.filesize_ = value;
+}
+
+// uint64 upload_id = 13;
+inline void FileResponse::clear_upload_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.upload_id_ = ::uint64_t{0u};
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000800U);
+}
+inline ::uint64_t FileResponse::upload_id() const {
+  // @@protoc_insertion_point(field_get:FileResponse.upload_id)
+  return _internal_upload_id();
+}
+inline void FileResponse::set_upload_id(::uint64_t value) {
+  _internal_set_upload_id(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000800U);
+  // @@protoc_insertion_point(field_set:FileResponse.upload_id)
+}
+inline ::uint64_t FileResponse::_internal_upload_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.upload_id_;
+}
+inline void FileResponse::_internal_set_upload_id(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.upload_id_ = value;
+}
+
+// repeated uint32 finished_chunks = 14;
+inline int FileResponse::_internal_finished_chunks_size() const {
+  return _internal_finished_chunks().size();
+}
+inline int FileResponse::finished_chunks_size() const {
+  return _internal_finished_chunks_size();
+}
+inline void FileResponse::clear_finished_chunks() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.finished_chunks_.Clear();
+  ClearHasBitForRepeated(_impl_._has_bits_[0],
+                  0x00000002U);
+}
+inline ::uint32_t FileResponse::finished_chunks(int index) const {
+  // @@protoc_insertion_point(field_get:FileResponse.finished_chunks)
+  return _internal_finished_chunks().Get(index);
+}
+inline void FileResponse::set_finished_chunks(int index, ::uint32_t value) {
+  _internal_mutable_finished_chunks()->Set(index, value);
+  // @@protoc_insertion_point(field_set:FileResponse.finished_chunks)
+}
+inline void FileResponse::add_finished_chunks(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _internal_mutable_finished_chunks()->Add(value);
+  SetHasBitForRepeated(_impl_._has_bits_[0], 0x00000002U);
+  // @@protoc_insertion_point(field_add:FileResponse.finished_chunks)
+}
+inline const ::google::protobuf::RepeatedField<::uint32_t>& FileResponse::finished_chunks() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_list:FileResponse.finished_chunks)
+  return _internal_finished_chunks();
+}
+inline ::google::protobuf::RepeatedField<::uint32_t>* PROTOBUF_NONNULL FileResponse::mutable_finished_chunks()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBitForRepeated(_impl_._has_bits_[0], 0x00000002U);
+  // @@protoc_insertion_point(field_mutable_list:FileResponse.finished_chunks)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _internal_mutable_finished_chunks();
+}
+inline const ::google::protobuf::RepeatedField<::uint32_t>&
+FileResponse::_internal_finished_chunks() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.finished_chunks_;
+}
+inline ::google::protobuf::RepeatedField<::uint32_t>* PROTOBUF_NONNULL
+FileResponse::_internal_mutable_finished_chunks() {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return &_impl_.finished_chunks_;
 }
 
 #ifdef __GNUC__
