@@ -7,18 +7,18 @@
 
 // 初始化文件服务器，绑定 TCP 事件回调并准备共享内存与数据库连接。
 FileServer::FileServer(muduo::net::EventLoop* loop, const muduo::net::InetAddress& listenAddr)
-    : _server(loop, listenAddr, "FileServer"),
-      _loop(loop)
+    : _server(loop, listenAddr, "FileServer"), _loop(loop)
 {
     _server.setConnectionCallback(std::bind(&FileServer::onConnection, this, std::placeholders::_1));
     _server.setMessageCallback(std::bind(&FileServer::onMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     _server.setThreadNum(4);
-
     key_t key = ftok("/tmp", 1);
     if (key == -1)
     {
         perror("ftok");
     }
+    _filePool=make_unique<ThreadPool>(4);
+    _filePool->start();
 
     _secShm = make_unique<SecKeyShm>(key);
     _secShm->init();
@@ -75,7 +75,7 @@ void FileServer::onConnection(const muduo::net::TcpConnectionPtr& conn)
     }
 }
 
-void FileServer::dispatch(const FileRequest& req,FileResponse& rsp)
+void FileServer::dispatch(const FileRequest& req,FileResponse& rsp,const muduo::net::TcpConnectionPtr&conn)
 {
     switch(req.type())
     {
@@ -84,7 +84,7 @@ void FileServer::dispatch(const FileRequest& req,FileResponse& rsp)
         break;
 
     case DOWNLOAD_FILE:
-        handleDownload(req, rsp);
+        handleDownload(req,conn);
         break;
 
     case DELETE_FILE:
@@ -146,7 +146,8 @@ void FileServer::onMessage(const muduo::net::TcpConnectionPtr& conn,
         }
 
         FileResponse rsp;
-        dispatch(req, rsp);
+        dispatch(req, rsp,conn);
+        if(req.type()==DOWNLOAD_FILE)break;
         string packet=Codec::encode(rsp);
         conn->send(packet);
     }
@@ -190,6 +191,13 @@ void FileServer::handleUploadCheck(const FileRequest& req,FileResponse&rsp){
     //之前上传过
     int uploadedSize = 0;
     if (_mysql->getUploadTask(std::stoi(req.clientid()),req.md5(),uploadedSize)){
+        std::vector<int>finishChunks;
+        int clientid=std::stoi(req.clientid());
+        _mysql->getFinishedChunk(clientid,_mysql->getUploadTaskId(clientid,req.md5()),finishChunks);
+        for(auto&index:finishChunks){
+            rsp.add_finished_chunks(index);
+        }
+        rsp.set_upload_id(_mysql->getUploadTaskId(std::stoi(req.clientid()),req.md5()));
         rsp.set_status(false);
         rsp.set_message("Resume upload");
         rsp.set_offset(uploadedSize);
@@ -201,8 +209,8 @@ void FileServer::handleUploadCheck(const FileRequest& req,FileResponse&rsp){
         storagePath+="/";
     }
     storagePath+=req.filename();
-
     _mysql->insertUploadTask(std::stoi(req.clientid()),req.md5(),req.filename(),req.path(),storagePath,req.filesize());
+    rsp.set_upload_id(_mysql->getUploadTaskId(std::stoi(req.clientid()),req.md5()));
     rsp.set_status(false);
     rsp.set_offset(0);
     rsp.set_message("New upload");
@@ -238,16 +246,18 @@ bool FileServer::checkIsExist(const std::string& md5, int& storageId)
 {
     return _mysql->checkMD5(md5,storageId);
 }
-
 string FileServer::calcMD5(const unsigned char*data,size_t len){
     unsigned char md[MD5_DIGEST_LENGTH];
     MD5(data,len,md);
     char buf[33];
+    // std::cout<<"my MD5:";
+
     for(int i = 0; i < MD5_DIGEST_LENGTH; ++i)
     {
+        // printf("%02x",buf[i]);
         sprintf(buf + i * 2, "%02x", md[i]);
     }
-
+    // std::cout<<'\n';
     buf[32] = '\0';
     return string(buf);
 }
@@ -303,7 +313,17 @@ void FileServer::handleUpload(const FileRequest& req, FileResponse& rsp)
         rsp.set_message("Write file failed");
         return;
     }
-    if(req.eof()){
+    if(!_mysql->updateUploadTask(stoi(req.clientid()),req.md5(),req.chunk_size())){
+        spdlog::warn("{} updateUploadTask fail",req.filename());
+        rsp.set_status(false);
+        return ;
+    }
+    if(!_mysql->insertUploadChunk(to_string(req.upload_id()),to_string(req.chunk_index()),to_string(req.chunk_size()))){
+            spdlog::warn("{} insertUploadChunk fail",req.filename());
+            rsp.set_status(false);
+            return ;
+    }
+    if(_mysql->fileEOF(stoi(req.clientid()),req.md5())){
         int storageId=-1;
         if(!_mysql->insertStorage(req.md5(),storagePath,req.filesize(),storageId)){
             spdlog::warn("{} insert storage fail",req.filename());
@@ -323,83 +343,114 @@ void FileServer::handleUpload(const FileRequest& req, FileResponse& rsp)
             rsp.set_status(false);
             return ;
         }
-        rsp.set_eof(true);
     }
-    else{
-        if(!_mysql->updateUploadTask(stoi(req.clientid()),req.md5(),req.chunk_size())){
-            spdlog::warn("{} updateUploadTask fail",req.filename());
-            rsp.set_status(false);
-            return ;
-        }
-    }
-    rsp.set_chunk_size(req.chunk_size());
     rsp.set_status(true);
     rsp.set_message("Upload success");
 }
 
+void sendResponse(FileResponse&rsp,const muduo::net::TcpConnectionPtr&conn){
+    std::string packet =Codec::encode(rsp);
+        // 回sub reactor
+    conn->getLoop()->queueInLoop(
+        [conn,packet]()
+        {
+            conn->send(packet);
+            spdlog::debug("send packet size {}",packet.size());
+        });
+}
 // 处理下载请求：读取文件内容并放入响应 data 中。
-void FileServer::handleDownload(const FileRequest& req, FileResponse& rsp)
+void FileServer::handleDownload(const FileRequest& req,const muduo::net::TcpConnectionPtr&conn)
 {
-    rsp.set_type(DOWNLOAD_FILE);
-
-    if (!verifyToken(req.token(), req.clientid()))
-    {
-        rsp.set_status(false);
-        rsp.set_message("Invalid token");
-        return;
-    }
-
-    // 从共享内存获取AES密钥
-    SecKeyInfo* info = _secShm->find(req.clientid().c_str());
-    if (info == nullptr)
-    {
-        rsp.set_status(false);
-        rsp.set_message("AES key not found");
-        return;
-    }
-
-    // 初始化AES
-    MyAES aes;
-    aes.setKey(reinterpret_cast<const unsigned char*>(info->secKey));
-    aes.setIV(reinterpret_cast<const unsigned char*>(req.iv().data()));
-
-    // 读取文件
-    std::vector<char> plain;
-    int storageID=_mysql->getStorageID(stoi(req.clientid()),req.path(),req.filename());
-    std::string storagePath;
-    if(!_mysql->getStoragePath(storageID,storagePath)){
-        spdlog::warn("getStoragePath fail");
-        rsp.set_status(false);
-        rsp.set_message("File");
-        return;
-    }
-
-    if (!_fileManager->download(storagePath, plain,req.offset()))
-    {
-        spdlog::warn("download fail");
-        rsp.set_status(false);
-        rsp.set_message("File not found");
-        return;
-    }
-    rsp.set_md5(calcMD5((const unsigned char*)plain.data(),plain.size()));
-    // AES加密
-    std::vector<unsigned char> cipher;
-    if (!aes.encrypt(
-            reinterpret_cast<const unsigned char*>(plain.data()),
-            plain.size(),
-            cipher))
-    {
-        rsp.set_status(false);
-        rsp.set_message("AES encrypt failed");
-        return;
-    }
-    rsp.set_status(true);
-    rsp.set_message("Download success");
-    FileItem*file=rsp.add_files();
-    file->set_filename(req.filename());
-    file->set_filesize(req.filesize());
-    file->set_isdir(false);
-    rsp.set_data(cipher.data(), cipher.size());
+    _filePool->submit([this,req,conn](){
+        FileResponse rsp;
+        rsp.set_type(DOWNLOAD_FILE);
+        if(!verifyToken(req.token(),req.clientid())){
+            rsp.set_status(false);
+            sendResponse(rsp,conn);
+            return ;
+        }
+        // 从共享内存获取AES密钥
+        SecKeyInfo* info = _secShm->find(req.clientid().c_str());
+        if (info == nullptr)
+        {
+            rsp.set_status(false);
+            rsp.set_message("AES key not found");
+            sendResponse(rsp,conn);
+            return ;
+        }
+        // 初始化AES
+        MyAES aes;
+        aes.setKey(reinterpret_cast<const unsigned char*>(info->secKey));
+        aes.setIV(reinterpret_cast<const unsigned char*>(req.iv().data()));
+        // 读取文件
+        unique_ptr<MySQL>mysql=make_unique<MySQL>();
+        Json::Value root;
+        std::ifstream fs("config.json");
+        if (!fs.is_open())
+        {
+            spdlog::warn("config.json not found, file server will run without DB auth");
+            rsp.set_status(false);
+            sendResponse(rsp,conn);
+            return;
+        }
+        Json::Reader reader;
+        if (!reader.parse(fs, root))
+        {
+            spdlog::warn("Failed to parse config.json");
+            rsp.set_status(false);
+            sendResponse(rsp,conn);
+            return ;
+        }
+        if (!mysql->connect(root["host"].asString(),
+                             root["user"].asString(),
+                             root["password"].asString(),
+                             root["database"].asString()))
+        {
+            spdlog::warn("Failed to connect database for FileServer token validation");
+            rsp.set_status(false);
+            sendResponse(rsp,conn);
+            return ;
+        }
+        int storageID=mysql->getStorageID(stoi(req.clientid()),req.path(),req.filename());
+        std::string storagePath;
+        if(!mysql->getStoragePath(storageID,storagePath)){
+            spdlog::warn("getStoragePath fail");
+            rsp.set_status(false);
+            rsp.set_message("File");
+            sendResponse(rsp,conn);
+            return ;
+        }
+        std::vector<char> data;
+        rsp.set_offset(req.offset());
+        bool ok=_fileManager->download(storagePath,data,req.offset());
+        if(ok)
+        {
+            rsp.set_status(true);
+            rsp.set_md5(calcMD5((const unsigned char*)data.data(),data.size()));
+            // AES加密
+            std::vector<unsigned char> cipher;
+            if (!aes.encrypt(reinterpret_cast<const unsigned char*>(data.data()),data.size(),cipher))
+            {
+                rsp.set_status(false);
+                rsp.set_message("AES encrypt failed");
+                sendResponse(rsp,conn);
+                return;
+            }
+            rsp.set_message("Download success");
+            FileItem*file=rsp.add_files();
+            file->set_filename(req.filename());
+            file->set_filesize(req.filesize());
+            file->set_isdir(false);
+            rsp.set_data(cipher.data(), cipher.size());
+        }
+        else
+        {
+            rsp.set_status(false);
+        }
+        rsp.set_eof(data.size()<CHUNK_SIZE);
+        spdlog::debug("send data size {}",data.size());
+        sendResponse(rsp,conn);
+    });
 }
 // 删除指定的客户端文件。
 void FileServer::handleDelete(const FileRequest& req, FileResponse& rsp)

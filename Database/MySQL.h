@@ -69,6 +69,11 @@ public:
     bool insertUploadTask(int clientid,const std::string& md5,const std::string& filename,const std::string& path,const std::string&storagePath,int filesize);
     bool updateUploadTask(int clientid,const std::string& md5,int upload_size);
     bool deleteUploadTask(int clientid,const std::string& md5);
+
+    bool getFinishedChunk(int clientid,int upload_id,std::vector<int>&finishChunks);
+    bool fileEOF(int userId, const std::string& md5);
+    int getUploadTaskId(int userId, const std::string& md5);
+    bool insertUploadChunk(std::string upload_id,std::string chunk_index,std::string chunk_size);
 private:
     
     std::string escapeString(const std::string& value);
