@@ -419,6 +419,8 @@ class FileRequest final :
     kOffsetFieldNumber = 7,
     kEofFieldNumber = 8,
     kChunkSizeFieldNumber = 9,
+    kUploadIdFieldNumber = 15,
+    kChunkIndexFieldNumber = 16,
   };
   // string token = 2;
   void clear_token();
@@ -586,6 +588,24 @@ class FileRequest final :
   void _internal_set_chunk_size(uint32_t value);
   public:
 
+  // uint64 upload_id = 15;
+  void clear_upload_id();
+  uint64_t upload_id() const;
+  void set_upload_id(uint64_t value);
+  private:
+  uint64_t _internal_upload_id() const;
+  void _internal_set_upload_id(uint64_t value);
+  public:
+
+  // uint64 chunk_index = 16;
+  void clear_chunk_index();
+  uint64_t chunk_index() const;
+  void set_chunk_index(uint64_t value);
+  private:
+  uint64_t _internal_chunk_index() const;
+  void _internal_set_chunk_index(uint64_t value);
+  public:
+
   // @@protoc_insertion_point(class_scope:FileRequest)
  private:
   class _Internal;
@@ -608,6 +628,8 @@ class FileRequest final :
     uint64_t offset_;
     bool eof_;
     uint32_t chunk_size_;
+    uint64_t upload_id_;
+    uint64_t chunk_index_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -737,6 +759,7 @@ class FileResponse final :
 
   enum : int {
     kFilesFieldNumber = 9,
+    kFinishedChunksFieldNumber = 14,
     kMessageFieldNumber = 3,
     kClientIDFieldNumber = 4,
     kDataFieldNumber = 8,
@@ -746,6 +769,7 @@ class FileResponse final :
     kEofFieldNumber = 6,
     kOffsetFieldNumber = 5,
     kFilesizeFieldNumber = 12,
+    kUploadIdFieldNumber = 13,
     kChunkSizeFieldNumber = 10,
   };
   // repeated .FileItem files = 9;
@@ -765,6 +789,28 @@ class FileResponse final :
   ::FileItem* add_files();
   const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::FileItem >&
       files() const;
+
+  // repeated uint32 finished_chunks = 14;
+  int finished_chunks_size() const;
+  private:
+  int _internal_finished_chunks_size() const;
+  public:
+  void clear_finished_chunks();
+  private:
+  uint32_t _internal_finished_chunks(int index) const;
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint32_t >&
+      _internal_finished_chunks() const;
+  void _internal_add_finished_chunks(uint32_t value);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint32_t >*
+      _internal_mutable_finished_chunks();
+  public:
+  uint32_t finished_chunks(int index) const;
+  void set_finished_chunks(int index, uint32_t value);
+  void add_finished_chunks(uint32_t value);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint32_t >&
+      finished_chunks() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint32_t >*
+      mutable_finished_chunks();
 
   // string message = 3;
   void clear_message();
@@ -867,6 +913,15 @@ class FileResponse final :
   void _internal_set_filesize(uint64_t value);
   public:
 
+  // uint64 upload_id = 13;
+  void clear_upload_id();
+  uint64_t upload_id() const;
+  void set_upload_id(uint64_t value);
+  private:
+  uint64_t _internal_upload_id() const;
+  void _internal_set_upload_id(uint64_t value);
+  public:
+
   // uint32 chunk_size = 10;
   void clear_chunk_size();
   uint32_t chunk_size() const;
@@ -885,6 +940,8 @@ class FileResponse final :
   typedef void DestructorSkippable_;
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::FileItem > files_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint32_t > finished_chunks_;
+    mutable std::atomic<int> _finished_chunks_cached_byte_size_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr message_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr clientid_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr data_;
@@ -894,6 +951,7 @@ class FileResponse final :
     bool eof_;
     uint64_t offset_;
     uint64_t filesize_;
+    uint64_t upload_id_;
     uint32_t chunk_size_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
@@ -1575,6 +1633,46 @@ inline void FileRequest::set_allocated_chunk_md5(std::string* chunk_md5) {
   // @@protoc_insertion_point(field_set_allocated:FileRequest.chunk_md5)
 }
 
+// uint64 upload_id = 15;
+inline void FileRequest::clear_upload_id() {
+  _impl_.upload_id_ = uint64_t{0u};
+}
+inline uint64_t FileRequest::_internal_upload_id() const {
+  return _impl_.upload_id_;
+}
+inline uint64_t FileRequest::upload_id() const {
+  // @@protoc_insertion_point(field_get:FileRequest.upload_id)
+  return _internal_upload_id();
+}
+inline void FileRequest::_internal_set_upload_id(uint64_t value) {
+  
+  _impl_.upload_id_ = value;
+}
+inline void FileRequest::set_upload_id(uint64_t value) {
+  _internal_set_upload_id(value);
+  // @@protoc_insertion_point(field_set:FileRequest.upload_id)
+}
+
+// uint64 chunk_index = 16;
+inline void FileRequest::clear_chunk_index() {
+  _impl_.chunk_index_ = uint64_t{0u};
+}
+inline uint64_t FileRequest::_internal_chunk_index() const {
+  return _impl_.chunk_index_;
+}
+inline uint64_t FileRequest::chunk_index() const {
+  // @@protoc_insertion_point(field_get:FileRequest.chunk_index)
+  return _internal_chunk_index();
+}
+inline void FileRequest::_internal_set_chunk_index(uint64_t value) {
+  
+  _impl_.chunk_index_ = value;
+}
+inline void FileRequest::set_chunk_index(uint64_t value) {
+  _internal_set_chunk_index(value);
+  // @@protoc_insertion_point(field_set:FileRequest.chunk_index)
+}
+
 // -------------------------------------------------------------------
 
 // FileResponse
@@ -1937,6 +2035,73 @@ inline void FileResponse::_internal_set_filesize(uint64_t value) {
 inline void FileResponse::set_filesize(uint64_t value) {
   _internal_set_filesize(value);
   // @@protoc_insertion_point(field_set:FileResponse.filesize)
+}
+
+// uint64 upload_id = 13;
+inline void FileResponse::clear_upload_id() {
+  _impl_.upload_id_ = uint64_t{0u};
+}
+inline uint64_t FileResponse::_internal_upload_id() const {
+  return _impl_.upload_id_;
+}
+inline uint64_t FileResponse::upload_id() const {
+  // @@protoc_insertion_point(field_get:FileResponse.upload_id)
+  return _internal_upload_id();
+}
+inline void FileResponse::_internal_set_upload_id(uint64_t value) {
+  
+  _impl_.upload_id_ = value;
+}
+inline void FileResponse::set_upload_id(uint64_t value) {
+  _internal_set_upload_id(value);
+  // @@protoc_insertion_point(field_set:FileResponse.upload_id)
+}
+
+// repeated uint32 finished_chunks = 14;
+inline int FileResponse::_internal_finished_chunks_size() const {
+  return _impl_.finished_chunks_.size();
+}
+inline int FileResponse::finished_chunks_size() const {
+  return _internal_finished_chunks_size();
+}
+inline void FileResponse::clear_finished_chunks() {
+  _impl_.finished_chunks_.Clear();
+}
+inline uint32_t FileResponse::_internal_finished_chunks(int index) const {
+  return _impl_.finished_chunks_.Get(index);
+}
+inline uint32_t FileResponse::finished_chunks(int index) const {
+  // @@protoc_insertion_point(field_get:FileResponse.finished_chunks)
+  return _internal_finished_chunks(index);
+}
+inline void FileResponse::set_finished_chunks(int index, uint32_t value) {
+  _impl_.finished_chunks_.Set(index, value);
+  // @@protoc_insertion_point(field_set:FileResponse.finished_chunks)
+}
+inline void FileResponse::_internal_add_finished_chunks(uint32_t value) {
+  _impl_.finished_chunks_.Add(value);
+}
+inline void FileResponse::add_finished_chunks(uint32_t value) {
+  _internal_add_finished_chunks(value);
+  // @@protoc_insertion_point(field_add:FileResponse.finished_chunks)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint32_t >&
+FileResponse::_internal_finished_chunks() const {
+  return _impl_.finished_chunks_;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint32_t >&
+FileResponse::finished_chunks() const {
+  // @@protoc_insertion_point(field_list:FileResponse.finished_chunks)
+  return _internal_finished_chunks();
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint32_t >*
+FileResponse::_internal_mutable_finished_chunks() {
+  return &_impl_.finished_chunks_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint32_t >*
+FileResponse::mutable_finished_chunks() {
+  // @@protoc_insertion_point(field_mutable_list:FileResponse.finished_chunks)
+  return _internal_mutable_finished_chunks();
 }
 
 #ifdef __GNUC__

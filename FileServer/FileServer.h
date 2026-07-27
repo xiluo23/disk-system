@@ -20,6 +20,7 @@
 #include"FileManager.h"
 #include"MyAES.h"
 #include"Codec.h"
+#include"ThreadPool.h"
 using namespace std;
 
 class FileServer
@@ -30,7 +31,7 @@ public:
     void start();
     bool verifyToken(const string&,const string&);
     string calcMD5(const unsigned char*data,size_t len);
-    void dispatch(const FileRequest& req,FileResponse& rsp);
+    void dispatch(const FileRequest& req,FileResponse& rsp,const muduo::net::TcpConnectionPtr&conn);
     bool checkIsExist(const std::string& md5, int& storageId);
 private:
     muduo::net::TcpServer _server;
@@ -41,7 +42,7 @@ private:
     
     void handleUpload(const FileRequest& req,FileResponse&rsp);
 
-    void handleDownload(const FileRequest& req,FileResponse&rsp);
+    void handleDownload(const FileRequest& req,const muduo::net::TcpConnectionPtr&conn);
 
     void handleDelete(const FileRequest& req,FileResponse&rsp);
 
@@ -60,6 +61,7 @@ private:
     unique_ptr<SecKeyShm> _secShm;
     unique_ptr<FileManager> _fileManager;
     unique_ptr<MySQL> _mysql;
+    unique_ptr<ThreadPool> _filePool;
 };
 
 

@@ -619,8 +619,9 @@ bool MySQL::updateUploadTask(int clientid,const std::string& md5,int upload_size
         "SET uploaded_size = uploaded_size+" + std::to_string(upload_size) +
         " WHERE user_id = " + std::to_string(clientid) +
         " AND md5 = '" + escapeString(md5) + "'";
-
-    return update(sql);
+    std::cout<<"updateUploadTask";
+    bool ret=update(sql);
+    return ret;
 }
 
 int MySQL::getFileSize(int userId,const std::string&parentPath,const std::string&filename){
@@ -635,6 +636,103 @@ int MySQL::getFileSize(int userId,const std::string&parentPath,const std::string
     MYSQL_ROW row=mysql_fetch_row(res);
     if(!row)return -1;
     return std::stoi(row[0]);
+}
+
+bool MySQL::fileEOF(int userId, const std::string& md5)
+{
+    if(!conn_){
+        return false;
+    }
+    std::string sql =
+        "SELECT file_size, uploaded_size "
+        "FROM upload_task "
+        "WHERE user_id = " + std::to_string(userId) +
+        " AND md5 = '" + escapeString(md5) + "'";
+    MYSQL_RES*res=query(sql);
+    if(!res)return false;
+    MYSQL_ROW row=mysql_fetch_row(res);
+    if(!row){
+        mysql_free_result(res);
+        return false;
+    }
+    bool ret=std::stoi(row[0])<=std::stoi(row[1]);
+    mysql_free_result(res);
+    return ret;
+}
+
+int MySQL::getUploadTaskId(int userId, const std::string& md5)
+{
+    if (!conn_)
+    {
+        return -1;
+    }
+
+    std::string sql =
+        "SELECT id "
+        "FROM upload_task "
+        "WHERE user_id = " + std::to_string(userId) +
+        " AND md5 = '" + md5 + "'";
+
+
+    MYSQL_RES* res = query(sql);
+    if (res == nullptr)
+    {
+        return -1;
+    }
+
+    MYSQL_ROW row = mysql_fetch_row(res);
+
+    int uploadId = -1;
+
+    if (row != nullptr)
+    {
+        uploadId = std::stoi(row[0]);
+    }
+
+    mysql_free_result(res);
+
+    return uploadId;
+}
+bool MySQL::insertUploadChunk(std::string upload_id,std::string chunk_index,std::string chunk_size){
+    if(!conn_){
+        return false;
+    }
+    std::string sql=
+      "INSERT INTO upload_chunk("
+            "upload_id,"
+            "chunk_index,"
+            "chunk_size,"
+            "status)"
+            " VALUES("
+            + escapeString(upload_id) + ","
+            + escapeString(chunk_index) + ","
+            + escapeString(chunk_size) + ",1)";
+    return update(sql);
+}
+
+bool MySQL::getFinishedChunk(int clientid,int upload_id,std::vector<int>&finishChunks){
+    if(!conn_)return false;
+    std::string sql =
+        "SELECT chunk_index "
+        "FROM upload_chunk "
+        "WHERE upload_id = " + escapeString(std::to_string(upload_id)) +
+        " AND status = 1 "
+        "ORDER BY chunk_index ASC";
+    MYSQL_RES*res=query(sql);
+    if(!res)return false;
+    MYSQL_ROW row=mysql_fetch_row(res);
+    if(!row){
+        mysql_free_result(res);
+        return false;
+    }
+    while ((row = mysql_fetch_row(res)) != nullptr)
+    {
+        finishChunks.push_back(std::stoi(row[0]));
+    }
+
+    mysql_free_result(res);
+    return true;
+    
 }
 
 
