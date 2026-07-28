@@ -1,2 +1,12 @@
-# disk-system
-C++ Qt muduo OpenSSL MySQL 
+基于 C++17 + Muduo + Qt + Protobuf + OpenSSL 实现的高性能安全云盘系统。
+
+项目采用 C/S架构，服务端基于 Muduo Reactor 模型实现高并发 TCP 文件服务，客户端使用 Qt 开发，实现用户认证、文件管理、大文件分片上传下载、断点续传、多线程传输等功能。
+系统采用 RSA + AES 混合加密方案保障文件传输安全，通过 MySQL 管理文件元数据与用户信息，支持文件去重、秒传以及断点恢复。
+
+客户端：Qt Widgets 开发，负责用户交互、文件上传下载、多线程任务管理
+服务端：C++ + Muduo 网络库，实现高并发 TCP 长连接服务
+通信协议：Protobuf 定义二进制协议
+数据存储：MySQL 管理用户和文件元数据
+文件存储：服务器本地磁盘
+安全传输：RSA + AES 混合加密体系
+
