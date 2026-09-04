@@ -1,6 +1,9 @@
 build/
-bin/*
+bin/
 !bin/config.json
 *.o
 *.a
 *.so
+.vscode/
+*.out
+Database/create_table.cpp
