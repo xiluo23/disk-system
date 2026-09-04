@@ -38,7 +38,10 @@ struct FileItemDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FileItemDefaultTypeInternal _FileItem_default_instance_;
 PROTOBUF_CONSTEXPR FileRequest::FileRequest(
     ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.token_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+    /*decltype(_impl_.block_hashs_)*/{}
+  , /*decltype(_impl_.block_size_)*/{}
+  , /*decltype(_impl_._block_size_cached_byte_size_)*/{0}
+  , /*decltype(_impl_.token_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.clientid_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.filename_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.data_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
@@ -46,6 +49,7 @@ PROTOBUF_CONSTEXPR FileRequest::FileRequest(
   , /*decltype(_impl_.iv_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.path_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.chunk_md5_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.block_hash_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.type_)*/0
   , /*decltype(_impl_.seckeyid_)*/0u
   , /*decltype(_impl_.filesize_)*/uint64_t{0u}
@@ -54,6 +58,7 @@ PROTOBUF_CONSTEXPR FileRequest::FileRequest(
   , /*decltype(_impl_.chunk_size_)*/0u
   , /*decltype(_impl_.upload_id_)*/uint64_t{0u}
   , /*decltype(_impl_.chunk_index_)*/uint64_t{0u}
+  , /*decltype(_impl_.version_)*/uint64_t{0u}
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct FileRequestDefaultTypeInternal {
   PROTOBUF_CONSTEXPR FileRequestDefaultTypeInternal()
@@ -69,6 +74,9 @@ PROTOBUF_CONSTEXPR FileResponse::FileResponse(
     /*decltype(_impl_.files_)*/{}
   , /*decltype(_impl_.finished_chunks_)*/{}
   , /*decltype(_impl_._finished_chunks_cached_byte_size_)*/{0}
+  , /*decltype(_impl_.missing_hashes_)*/{}
+  , /*decltype(_impl_.block_offsets_)*/{}
+  , /*decltype(_impl_._block_offsets_cached_byte_size_)*/{0}
   , /*decltype(_impl_.message_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.clientid_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.data_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
@@ -127,6 +135,10 @@ const uint32_t TableStruct_File_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(pro
   PROTOBUF_FIELD_OFFSET(::FileRequest, _impl_.chunk_md5_),
   PROTOBUF_FIELD_OFFSET(::FileRequest, _impl_.upload_id_),
   PROTOBUF_FIELD_OFFSET(::FileRequest, _impl_.chunk_index_),
+  PROTOBUF_FIELD_OFFSET(::FileRequest, _impl_.version_),
+  PROTOBUF_FIELD_OFFSET(::FileRequest, _impl_.block_hash_),
+  PROTOBUF_FIELD_OFFSET(::FileRequest, _impl_.block_hashs_),
+  PROTOBUF_FIELD_OFFSET(::FileRequest, _impl_.block_size_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::FileResponse, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -146,11 +158,13 @@ const uint32_t TableStruct_File_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(pro
   PROTOBUF_FIELD_OFFSET(::FileResponse, _impl_.filesize_),
   PROTOBUF_FIELD_OFFSET(::FileResponse, _impl_.upload_id_),
   PROTOBUF_FIELD_OFFSET(::FileResponse, _impl_.finished_chunks_),
+  PROTOBUF_FIELD_OFFSET(::FileResponse, _impl_.missing_hashes_),
+  PROTOBUF_FIELD_OFFSET(::FileResponse, _impl_.block_offsets_),
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, -1, sizeof(::FileItem)},
   { 10, -1, -1, sizeof(::FileRequest)},
-  { 32, -1, -1, sizeof(::FileResponse)},
+  { 36, -1, -1, sizeof(::FileResponse)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -162,28 +176,33 @@ static const ::_pb::Message* const file_default_instances[] = {
 const char descriptor_table_protodef_File_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\nFile.proto\"Q\n\010FileItem\022\020\n\010filename\030\001 \001"
   "(\t\022\020\n\010filesize\030\002 \001(\004\022\r\n\005isDir\030\003 \001(\010\022\022\n\nm"
-  "odifyTime\030\004 \001(\t\"\235\002\n\013FileRequest\022\026\n\004type\030"
+  "odifyTime\030\004 \001(\t\"\353\002\n\013FileRequest\022\026\n\004type\030"
   "\001 \001(\0162\010.CmdType\022\r\n\005token\030\002 \001(\t\022\020\n\010client"
   "ID\030\003 \001(\t\022\020\n\010seckeyID\030\004 \001(\r\022\020\n\010filename\030\005"
   " \001(\t\022\020\n\010filesize\030\006 \001(\004\022\016\n\006offset\030\007 \001(\004\022\013"
   "\n\003eof\030\010 \001(\010\022\022\n\nchunk_size\030\t \001(\r\022\014\n\004data\030"
   "\n \001(\014\022\013\n\003md5\030\013 \001(\014\022\n\n\002iv\030\014 \001(\014\022\014\n\004path\030\r"
   " \001(\t\022\021\n\tchunk_md5\030\016 \001(\014\022\021\n\tupload_id\030\017 \001"
-  "(\004\022\023\n\013chunk_index\030\020 \001(\004\"\375\001\n\014FileResponse"
-  "\022\026\n\004type\030\001 \001(\0162\010.CmdType\022\016\n\006status\030\002 \001(\010"
-  "\022\017\n\007message\030\003 \001(\t\022\020\n\010clientID\030\004 \001(\t\022\016\n\006o"
-  "ffset\030\005 \001(\004\022\013\n\003eof\030\006 \001(\010\022\014\n\004data\030\010 \001(\014\022\030"
-  "\n\005files\030\t \003(\0132\t.FileItem\022\022\n\nchunk_size\030\n"
-  " \001(\r\022\013\n\003md5\030\013 \001(\014\022\020\n\010filesize\030\014 \001(\004\022\021\n\tu"
-  "pload_id\030\r \001(\004\022\027\n\017finished_chunks\030\016 \003(\r*"
-  "\217\001\n\007CmdType\022\017\n\013UPLOAD_FILE\020\000\022\021\n\rDOWNLOAD"
-  "_FILE\020\001\022\017\n\013DELETE_FILE\020\002\022\r\n\tLIST_FILE\020\003\022"
-  "\t\n\005MKDIR\020\004\022\017\n\013RENAME_FILE\020\005\022\020\n\014UPLOAD_CH"
-  "ECK\020\006\022\022\n\016DOWNLOAD_CHECK\020\007b\006proto3"
+  "(\004\022\023\n\013chunk_index\030\020 \001(\004\022\017\n\007version\030\021 \001(\004"
+  "\022\022\n\nblock_hash\030\022 \001(\014\022\023\n\013block_hashs\030\023 \003("
+  "\014\022\022\n\nblock_size\030\024 \003(\r\"\254\002\n\014FileResponse\022\026"
+  "\n\004type\030\001 \001(\0162\010.CmdType\022\016\n\006status\030\002 \001(\010\022\017"
+  "\n\007message\030\003 \001(\t\022\020\n\010clientID\030\004 \001(\t\022\016\n\006off"
+  "set\030\005 \001(\004\022\013\n\003eof\030\006 \001(\010\022\014\n\004data\030\010 \001(\014\022\030\n\005"
+  "files\030\t \003(\0132\t.FileItem\022\022\n\nchunk_size\030\n \001"
+  "(\r\022\013\n\003md5\030\013 \001(\014\022\020\n\010filesize\030\014 \001(\004\022\021\n\tupl"
+  "oad_id\030\r \001(\004\022\027\n\017finished_chunks\030\016 \003(\r\022\026\n"
+  "\016missing_hashes\030\017 \003(\014\022\025\n\rblock_offsets\030\020"
+  " \003(\004*\301\001\n\007CmdType\022\017\n\013UPLOAD_FILE\020\000\022\021\n\rDOW"
+  "NLOAD_FILE\020\001\022\017\n\013DELETE_FILE\020\002\022\r\n\tLIST_FI"
+  "LE\020\003\022\t\n\005MKDIR\020\004\022\017\n\013RENAME_FILE\020\005\022\020\n\014UPLO"
+  "AD_CHECK\020\006\022\022\n\016DOWNLOAD_CHECK\020\007\022\016\n\nSYNC_C"
+  "HECK\020\010\022\017\n\013SYNC_UPLOAD\020\t\022\017\n\013SYNC_COMMIT\020\n"
+  "b\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_File_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_File_2eproto = {
-    false, false, 793, descriptor_table_protodef_File_2eproto,
+    false, false, 968, descriptor_table_protodef_File_2eproto,
     "File.proto",
     &descriptor_table_File_2eproto_once, nullptr, 0, 3,
     schemas, file_default_instances, TableStruct_File_2eproto::offsets,
@@ -210,6 +229,9 @@ bool CmdType_IsValid(int value) {
     case 5:
     case 6:
     case 7:
+    case 8:
+    case 9:
+    case 10:
       return true;
     default:
       return false;
@@ -546,7 +568,10 @@ FileRequest::FileRequest(const FileRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
   FileRequest* const _this = this; (void)_this;
   new (&_impl_) Impl_{
-      decltype(_impl_.token_){}
+      decltype(_impl_.block_hashs_){from._impl_.block_hashs_}
+    , decltype(_impl_.block_size_){from._impl_.block_size_}
+    , /*decltype(_impl_._block_size_cached_byte_size_)*/{0}
+    , decltype(_impl_.token_){}
     , decltype(_impl_.clientid_){}
     , decltype(_impl_.filename_){}
     , decltype(_impl_.data_){}
@@ -554,6 +579,7 @@ FileRequest::FileRequest(const FileRequest& from)
     , decltype(_impl_.iv_){}
     , decltype(_impl_.path_){}
     , decltype(_impl_.chunk_md5_){}
+    , decltype(_impl_.block_hash_){}
     , decltype(_impl_.type_){}
     , decltype(_impl_.seckeyid_){}
     , decltype(_impl_.filesize_){}
@@ -562,6 +588,7 @@ FileRequest::FileRequest(const FileRequest& from)
     , decltype(_impl_.chunk_size_){}
     , decltype(_impl_.upload_id_){}
     , decltype(_impl_.chunk_index_){}
+    , decltype(_impl_.version_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
@@ -629,9 +656,17 @@ FileRequest::FileRequest(const FileRequest& from)
     _this->_impl_.chunk_md5_.Set(from._internal_chunk_md5(), 
       _this->GetArenaForAllocation());
   }
+  _impl_.block_hash_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.block_hash_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_block_hash().empty()) {
+    _this->_impl_.block_hash_.Set(from._internal_block_hash(), 
+      _this->GetArenaForAllocation());
+  }
   ::memcpy(&_impl_.type_, &from._impl_.type_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.chunk_index_) -
-    reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.chunk_index_));
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.version_) -
+    reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.version_));
   // @@protoc_insertion_point(copy_constructor:FileRequest)
 }
 
@@ -640,7 +675,10 @@ inline void FileRequest::SharedCtor(
   (void)arena;
   (void)is_message_owned;
   new (&_impl_) Impl_{
-      decltype(_impl_.token_){}
+      decltype(_impl_.block_hashs_){arena}
+    , decltype(_impl_.block_size_){arena}
+    , /*decltype(_impl_._block_size_cached_byte_size_)*/{0}
+    , decltype(_impl_.token_){}
     , decltype(_impl_.clientid_){}
     , decltype(_impl_.filename_){}
     , decltype(_impl_.data_){}
@@ -648,6 +686,7 @@ inline void FileRequest::SharedCtor(
     , decltype(_impl_.iv_){}
     , decltype(_impl_.path_){}
     , decltype(_impl_.chunk_md5_){}
+    , decltype(_impl_.block_hash_){}
     , decltype(_impl_.type_){0}
     , decltype(_impl_.seckeyid_){0u}
     , decltype(_impl_.filesize_){uint64_t{0u}}
@@ -656,6 +695,7 @@ inline void FileRequest::SharedCtor(
     , decltype(_impl_.chunk_size_){0u}
     , decltype(_impl_.upload_id_){uint64_t{0u}}
     , decltype(_impl_.chunk_index_){uint64_t{0u}}
+    , decltype(_impl_.version_){uint64_t{0u}}
     , /*decltype(_impl_._cached_size_)*/{}
   };
   _impl_.token_.InitDefault();
@@ -690,6 +730,10 @@ inline void FileRequest::SharedCtor(
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.chunk_md5_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.block_hash_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.block_hash_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
 FileRequest::~FileRequest() {
@@ -703,6 +747,8 @@ FileRequest::~FileRequest() {
 
 inline void FileRequest::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.block_hashs_.~RepeatedPtrField();
+  _impl_.block_size_.~RepeatedField();
   _impl_.token_.Destroy();
   _impl_.clientid_.Destroy();
   _impl_.filename_.Destroy();
@@ -711,6 +757,7 @@ inline void FileRequest::SharedDtor() {
   _impl_.iv_.Destroy();
   _impl_.path_.Destroy();
   _impl_.chunk_md5_.Destroy();
+  _impl_.block_hash_.Destroy();
 }
 
 void FileRequest::SetCachedSize(int size) const {
@@ -723,6 +770,8 @@ void FileRequest::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
+  _impl_.block_hashs_.Clear();
+  _impl_.block_size_.Clear();
   _impl_.token_.ClearToEmpty();
   _impl_.clientid_.ClearToEmpty();
   _impl_.filename_.ClearToEmpty();
@@ -731,9 +780,10 @@ void FileRequest::Clear() {
   _impl_.iv_.ClearToEmpty();
   _impl_.path_.ClearToEmpty();
   _impl_.chunk_md5_.ClearToEmpty();
+  _impl_.block_hash_.ClearToEmpty();
   ::memset(&_impl_.type_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&_impl_.chunk_index_) -
-      reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.chunk_index_));
+      reinterpret_cast<char*>(&_impl_.version_) -
+      reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.version_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -884,6 +934,48 @@ const char* FileRequest::_InternalParse(const char* ptr, ::_pbi::ParseContext* c
         } else
           goto handle_unusual;
         continue;
+      // uint64 version = 17;
+      case 17:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 136)) {
+          _impl_.version_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // bytes block_hash = 18;
+      case 18:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 146)) {
+          auto str = _internal_mutable_block_hash();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated bytes block_hashs = 19;
+      case 19:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 154)) {
+          ptr -= 2;
+          do {
+            ptr += 2;
+            auto str = _internal_add_block_hashs();
+            ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<154>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated uint32 block_size = 20;
+      case 20:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 162)) {
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedUInt32Parser(_internal_mutable_block_size(), ptr, ctx);
+          CHK_(ptr);
+        } else if (static_cast<uint8_t>(tag) == 160) {
+          _internal_add_block_size(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr));
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
       default:
         goto handle_unusual;
     }  // switch
@@ -1026,6 +1118,33 @@ uint8_t* FileRequest::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteUInt64ToArray(16, this->_internal_chunk_index(), target);
   }
 
+  // uint64 version = 17;
+  if (this->_internal_version() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(17, this->_internal_version(), target);
+  }
+
+  // bytes block_hash = 18;
+  if (!this->_internal_block_hash().empty()) {
+    target = stream->WriteBytesMaybeAliased(
+        18, this->_internal_block_hash(), target);
+  }
+
+  // repeated bytes block_hashs = 19;
+  for (int i = 0, n = this->_internal_block_hashs_size(); i < n; i++) {
+    const auto& s = this->_internal_block_hashs(i);
+    target = stream->WriteBytes(19, s, target);
+  }
+
+  // repeated uint32 block_size = 20;
+  {
+    int byte_size = _impl_._block_size_cached_byte_size_.load(std::memory_order_relaxed);
+    if (byte_size > 0) {
+      target = stream->WriteUInt32Packed(
+          20, _internal_block_size(), byte_size, target);
+    }
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -1041,6 +1160,28 @@ size_t FileRequest::ByteSizeLong() const {
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
+
+  // repeated bytes block_hashs = 19;
+  total_size += 2 *
+      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(_impl_.block_hashs_.size());
+  for (int i = 0, n = _impl_.block_hashs_.size(); i < n; i++) {
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::BytesSize(
+      _impl_.block_hashs_.Get(i));
+  }
+
+  // repeated uint32 block_size = 20;
+  {
+    size_t data_size = ::_pbi::WireFormatLite::
+      UInt32Size(this->_impl_.block_size_);
+    if (data_size > 0) {
+      total_size += 2 +
+        ::_pbi::WireFormatLite::Int32Size(static_cast<int32_t>(data_size));
+    }
+    int cached_size = ::_pbi::ToCachedSize(data_size);
+    _impl_._block_size_cached_byte_size_.store(cached_size,
+                                    std::memory_order_relaxed);
+    total_size += data_size;
+  }
 
   // string token = 2;
   if (!this->_internal_token().empty()) {
@@ -1098,6 +1239,13 @@ size_t FileRequest::ByteSizeLong() const {
         this->_internal_chunk_md5());
   }
 
+  // bytes block_hash = 18;
+  if (!this->_internal_block_hash().empty()) {
+    total_size += 2 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::BytesSize(
+        this->_internal_block_hash());
+  }
+
   // .CmdType type = 1;
   if (this->_internal_type() != 0) {
     total_size += 1 +
@@ -1141,6 +1289,13 @@ size_t FileRequest::ByteSizeLong() const {
         this->_internal_chunk_index());
   }
 
+  // uint64 version = 17;
+  if (this->_internal_version() != 0) {
+    total_size += 2 +
+      ::_pbi::WireFormatLite::UInt64Size(
+        this->_internal_version());
+  }
+
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
@@ -1159,6 +1314,8 @@ void FileRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PR
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
+  _this->_impl_.block_hashs_.MergeFrom(from._impl_.block_hashs_);
+  _this->_impl_.block_size_.MergeFrom(from._impl_.block_size_);
   if (!from._internal_token().empty()) {
     _this->_internal_set_token(from._internal_token());
   }
@@ -1182,6 +1339,9 @@ void FileRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PR
   }
   if (!from._internal_chunk_md5().empty()) {
     _this->_internal_set_chunk_md5(from._internal_chunk_md5());
+  }
+  if (!from._internal_block_hash().empty()) {
+    _this->_internal_set_block_hash(from._internal_block_hash());
   }
   if (from._internal_type() != 0) {
     _this->_internal_set_type(from._internal_type());
@@ -1207,6 +1367,9 @@ void FileRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PR
   if (from._internal_chunk_index() != 0) {
     _this->_internal_set_chunk_index(from._internal_chunk_index());
   }
+  if (from._internal_version() != 0) {
+    _this->_internal_set_version(from._internal_version());
+  }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -1226,6 +1389,8 @@ void FileRequest::InternalSwap(FileRequest* other) {
   auto* lhs_arena = GetArenaForAllocation();
   auto* rhs_arena = other->GetArenaForAllocation();
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  _impl_.block_hashs_.InternalSwap(&other->_impl_.block_hashs_);
+  _impl_.block_size_.InternalSwap(&other->_impl_.block_size_);
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.token_, lhs_arena,
       &other->_impl_.token_, rhs_arena
@@ -1258,9 +1423,13 @@ void FileRequest::InternalSwap(FileRequest* other) {
       &_impl_.chunk_md5_, lhs_arena,
       &other->_impl_.chunk_md5_, rhs_arena
   );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.block_hash_, lhs_arena,
+      &other->_impl_.block_hash_, rhs_arena
+  );
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(FileRequest, _impl_.chunk_index_)
-      + sizeof(FileRequest::_impl_.chunk_index_)
+      PROTOBUF_FIELD_OFFSET(FileRequest, _impl_.version_)
+      + sizeof(FileRequest::_impl_.version_)
       - PROTOBUF_FIELD_OFFSET(FileRequest, _impl_.type_)>(
           reinterpret_cast<char*>(&_impl_.type_),
           reinterpret_cast<char*>(&other->_impl_.type_));
@@ -1291,6 +1460,9 @@ FileResponse::FileResponse(const FileResponse& from)
       decltype(_impl_.files_){from._impl_.files_}
     , decltype(_impl_.finished_chunks_){from._impl_.finished_chunks_}
     , /*decltype(_impl_._finished_chunks_cached_byte_size_)*/{0}
+    , decltype(_impl_.missing_hashes_){from._impl_.missing_hashes_}
+    , decltype(_impl_.block_offsets_){from._impl_.block_offsets_}
+    , /*decltype(_impl_._block_offsets_cached_byte_size_)*/{0}
     , decltype(_impl_.message_){}
     , decltype(_impl_.clientid_){}
     , decltype(_impl_.data_){}
@@ -1351,6 +1523,9 @@ inline void FileResponse::SharedCtor(
       decltype(_impl_.files_){arena}
     , decltype(_impl_.finished_chunks_){arena}
     , /*decltype(_impl_._finished_chunks_cached_byte_size_)*/{0}
+    , decltype(_impl_.missing_hashes_){arena}
+    , decltype(_impl_.block_offsets_){arena}
+    , /*decltype(_impl_._block_offsets_cached_byte_size_)*/{0}
     , decltype(_impl_.message_){}
     , decltype(_impl_.clientid_){}
     , decltype(_impl_.data_){}
@@ -1395,6 +1570,8 @@ inline void FileResponse::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
   _impl_.files_.~RepeatedPtrField();
   _impl_.finished_chunks_.~RepeatedField();
+  _impl_.missing_hashes_.~RepeatedPtrField();
+  _impl_.block_offsets_.~RepeatedField();
   _impl_.message_.Destroy();
   _impl_.clientid_.Destroy();
   _impl_.data_.Destroy();
@@ -1413,6 +1590,8 @@ void FileResponse::Clear() {
 
   _impl_.files_.Clear();
   _impl_.finished_chunks_.Clear();
+  _impl_.missing_hashes_.Clear();
+  _impl_.block_offsets_.Clear();
   _impl_.message_.ClearToEmpty();
   _impl_.clientid_.ClearToEmpty();
   _impl_.data_.ClearToEmpty();
@@ -1548,6 +1727,31 @@ const char* FileResponse::_InternalParse(const char* ptr, ::_pbi::ParseContext* 
         } else
           goto handle_unusual;
         continue;
+      // repeated bytes missing_hashes = 15;
+      case 15:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 122)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            auto str = _internal_add_missing_hashes();
+            ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<122>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated uint64 block_offsets = 16;
+      case 16:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 130)) {
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedUInt64Parser(_internal_mutable_block_offsets(), ptr, ctx);
+          CHK_(ptr);
+        } else if (static_cast<uint8_t>(tag) == 128) {
+          _internal_add_block_offsets(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr));
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
       default:
         goto handle_unusual;
     }  // switch
@@ -1669,6 +1873,21 @@ uint8_t* FileResponse::_InternalSerialize(
     }
   }
 
+  // repeated bytes missing_hashes = 15;
+  for (int i = 0, n = this->_internal_missing_hashes_size(); i < n; i++) {
+    const auto& s = this->_internal_missing_hashes(i);
+    target = stream->WriteBytes(15, s, target);
+  }
+
+  // repeated uint64 block_offsets = 16;
+  {
+    int byte_size = _impl_._block_offsets_cached_byte_size_.load(std::memory_order_relaxed);
+    if (byte_size > 0) {
+      target = stream->WriteUInt64Packed(
+          16, _internal_block_offsets(), byte_size, target);
+    }
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -1702,6 +1921,28 @@ size_t FileResponse::ByteSizeLong() const {
     }
     int cached_size = ::_pbi::ToCachedSize(data_size);
     _impl_._finished_chunks_cached_byte_size_.store(cached_size,
+                                    std::memory_order_relaxed);
+    total_size += data_size;
+  }
+
+  // repeated bytes missing_hashes = 15;
+  total_size += 1 *
+      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(_impl_.missing_hashes_.size());
+  for (int i = 0, n = _impl_.missing_hashes_.size(); i < n; i++) {
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::BytesSize(
+      _impl_.missing_hashes_.Get(i));
+  }
+
+  // repeated uint64 block_offsets = 16;
+  {
+    size_t data_size = ::_pbi::WireFormatLite::
+      UInt64Size(this->_impl_.block_offsets_);
+    if (data_size > 0) {
+      total_size += 2 +
+        ::_pbi::WireFormatLite::Int32Size(static_cast<int32_t>(data_size));
+    }
+    int cached_size = ::_pbi::ToCachedSize(data_size);
+    _impl_._block_offsets_cached_byte_size_.store(cached_size,
                                     std::memory_order_relaxed);
     total_size += data_size;
   }
@@ -1790,6 +2031,8 @@ void FileResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::P
 
   _this->_impl_.files_.MergeFrom(from._impl_.files_);
   _this->_impl_.finished_chunks_.MergeFrom(from._impl_.finished_chunks_);
+  _this->_impl_.missing_hashes_.MergeFrom(from._impl_.missing_hashes_);
+  _this->_impl_.block_offsets_.MergeFrom(from._impl_.block_offsets_);
   if (!from._internal_message().empty()) {
     _this->_internal_set_message(from._internal_message());
   }
@@ -1844,6 +2087,8 @@ void FileResponse::InternalSwap(FileResponse* other) {
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   _impl_.files_.InternalSwap(&other->_impl_.files_);
   _impl_.finished_chunks_.InternalSwap(&other->_impl_.finished_chunks_);
+  _impl_.missing_hashes_.InternalSwap(&other->_impl_.missing_hashes_);
+  _impl_.block_offsets_.InternalSwap(&other->_impl_.block_offsets_);
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.message_, lhs_arena,
       &other->_impl_.message_, rhs_arena

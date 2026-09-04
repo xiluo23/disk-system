@@ -11,6 +11,9 @@ enum CmdType
     RENAME_FILE = 5;
     UPLOAD_CHECK=6;
     DOWNLOAD_CHECK=7;
+    SYNC_CHECK=8;
+    SYNC_UPLOAD=9;
+    SYNC_COMMIT=10;
 }
 message FileItem{
     string filename=1;
@@ -45,6 +48,12 @@ message FileRequest
     bytes chunk_md5=14;
     uint64 upload_id=15;
     uint64 chunk_index=16;
+
+    uint64 version=17;
+    bytes block_hash=18;//SYNC_UPLOAD 当前哈希块
+    repeated bytes block_hashs=19; //块清单哈希块
+    repeated uint32 block_size=20;
+
 }
 
 
@@ -75,5 +84,8 @@ message FileResponse
     uint64 upload_id=13;
 
     repeated uint32 finished_chunks=14;
+
+    repeated bytes missing_hashes=15;//SYNC_CHECK 应答：缺哪些块
+    repeated uint64 block_offsets=16;
 
 }

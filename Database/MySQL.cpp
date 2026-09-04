@@ -51,7 +51,7 @@ bool MySQL::connect(const std::string& host,
     return true;
 }
 
-std::string MySQL::escapeString(const std::string& value)
+std::string MySQL::escapeString(const std::string value)
 {
     if (!conn_)
         return {};
@@ -100,7 +100,7 @@ bool MySQL::update(const std::string& sql)
         std::cerr << "MySQL connection is not initialized" << std::endl;
         return false;
     }
-
+    // spdlog::debug("MySQL update: {}", sql);
     if (mysql_query(conn_, sql.c_str()) != 0)
     {
         std::cerr << mysql_error(conn_) << std::endl;
@@ -117,7 +117,7 @@ MYSQL_RES* MySQL::query(const std::string& sql)
         std::cerr << "MySQL connection is not initialized" << std::endl;
         return nullptr;
     }
-
+    // spdlog::debug("MySQL query: {}", sql);
     if (mysql_query(conn_, sql.c_str()) != 0)
     {
         std::cerr << mysql_error(conn_) << std::endl;
@@ -576,7 +576,7 @@ int MySQL::getStorageID(int userId,
 }
 
 
-bool MySQL::getUploadTask(int clientid,const std::string&md5,int& uploadSize){
+bool MySQL::getUploadTask(int clientid,const std::string md5,int& uploadSize){
     if(!conn_){
         return false;
     }
@@ -619,7 +619,6 @@ bool MySQL::updateUploadTask(int clientid,const std::string& md5,int upload_size
         "SET uploaded_size = uploaded_size+" + std::to_string(upload_size) +
         " WHERE user_id = " + std::to_string(clientid) +
         " AND md5 = '" + escapeString(md5) + "'";
-    std::cout<<"updateUploadTask";
     bool ret=update(sql);
     return ret;
 }
@@ -628,7 +627,7 @@ int MySQL::getFileSize(int userId,const std::string&parentPath,const std::string
     if(!conn_)return -1;
     std::string sql=
         "SELECT filesize from user_file where user_id="+std::to_string(userId)+" AND parent_path='"
-        +parentPath+"' AND filename='"+filename+"'";
+        +escapeString(parentPath)+"' AND filename='"+escapeString(filename)+"'";
     MYSQL_RES* res=query(sql);
     if(!res){
         return -1;
@@ -671,7 +670,7 @@ int MySQL::getUploadTaskId(int userId, const std::string& md5)
         "SELECT id "
         "FROM upload_task "
         "WHERE user_id = " + std::to_string(userId) +
-        " AND md5 = '" + md5 + "'";
+        " AND md5 = '" + escapeString(md5) + "'";
 
 
     MYSQL_RES* res = query(sql);
@@ -725,10 +724,10 @@ bool MySQL::getFinishedChunk(int clientid,int upload_id,std::vector<int>&finishC
         mysql_free_result(res);
         return false;
     }
-    while ((row = mysql_fetch_row(res)) != nullptr)
+    do
     {
         finishChunks.push_back(std::stoi(row[0]));
-    }
+    }while ((row = mysql_fetch_row(res)) != nullptr);
 
     mysql_free_result(res);
     return true;
@@ -747,4 +746,287 @@ bool MySQL::deleteUploadTask(int clientid,const std::string& md5)
         " AND md5 = '" + escapeString(md5) + "'";
 
     return update(sql);
+}
+
+
+std::string MySQL::getToken(int clientid){
+    if (!conn_)
+        return "";
+    std::string sql = "SELECT token FROM user WHERE id = " + std::to_string(clientid) + " LIMIT 1";
+    MYSQL_RES* res = query(sql);
+    if (res == nullptr)
+    {
+        return "";
+    }
+    MYSQL_ROW row = mysql_fetch_row(res);
+    std::string token = "";
+    if (row != nullptr)
+    {
+        token = std::string(row[0]);
+    }
+    mysql_free_result(res);
+    return token;
+}
+
+int MySQL::insertBlockIfAbsent(const string& hash, size_t size, int& blockId){
+    if (!conn_)
+        return -1;
+    string path="./blocks/"+hash;
+    string sql="INSERT INTO content_block(block_hash, block_size, ref_count,  storage_path) "
+               "VALUES('"+escapeString(hash)+"',"+std::to_string(size)+",1,'"+escapeString(path)+"') "
+               "ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)";
+    if(!update(sql)){
+        return -1;
+    }
+    blockId=static_cast<int>(mysql_insert_id(conn_));
+    return blockId;
+}
+
+
+bool MySQL::updateBlockRefCount(const string& hash, int delta,bool& deleteIfZero){
+    if(!conn_)
+        return false;
+    string sql="UPDATE content_block SET ref_count=ref_count+"+std::to_string(delta)+" WHERE block_hash="+escapeString(hash);
+    if(!update(sql)){
+        return false;
+    }
+    if(delta==-1){
+        sql="SELECT ref_count FROM content_block WHERE block_hash="+escapeString(hash);
+        MYSQL_RES* res=query(sql);
+        deleteIfZero=false;
+        if(!res)return false;
+        MYSQL_ROW row=mysql_fetch_row(res);
+        if(!row){
+            mysql_free_result(res);
+            return false;
+        }
+        int ref_count=std::stoi(row[0]);
+        mysql_free_result(res);
+        if(ref_count==0){
+            deleteIfZero=true;
+        }
+    }
+    return true;
+}
+
+bool MySQL::saveFileBlockMap(int fileId, int version, const std::vector<BlockInfo>& blocks){
+    if(!conn_)
+        return false;
+    if(blocks.empty())
+        return false;    
+    // 开启事务
+    if (!update("START TRANSACTION"))
+        return false;
+    //删除旧清单
+    string del="DELETE FROM file_block_map WHERE file_id="+std::to_string(fileId)+" AND version="+std::to_string(version);
+    if(!update(del)){
+        update("ROLLBACK");
+        return false;
+    }
+    
+    string sql="INSERT INTO file_block_map(file_id, version, block_index, block_hash,block_size) VALUES ";
+    bool first=true;
+    for(auto&block:blocks){
+        if(!first){
+            sql+=",";
+        }
+        sql+="("+std::to_string(fileId)+","+std::to_string(version)+","+std::to_string(block.id)+",'"+escapeString(block.hash)+"',"+std::to_string(block.size)+")";
+        first=false;
+    }
+    if(!update(sql)){
+        update("ROLLBACK");
+        return false;
+    }
+    if(!update("COMMIT")){
+        update("ROLLBACK");
+        return false;
+    }
+    return true;
+}
+
+
+std::vector<BlockInfo> MySQL::getFileBlockMap(int fileId, int version){
+    if(!conn_)
+        return {};
+    string sql="SELECT block_index, block_hash, block_size, ref_count, storage_path FROM file_block_map WHERE file_id="+std::to_string(fileId)+" AND version="+std::to_string(version)+" ORDER BY block_index ASC";
+    MYSQL_RES* res=query(sql);
+    if(!res)return {};
+    std::vector<BlockInfo>blocks;
+    MYSQL_ROW row=nullptr;
+    while((row=mysql_fetch_row(res))!=nullptr){
+        BlockInfo block;
+        block.id=row[0]?std::stoi(row[0]):0;
+        block.hash=row[1]?row[1]:"";
+        block.size=row[2]?std::stoull(row[2]):0;
+        block.refCount=row[3]?std::stoull(row[3]):0;
+        block.storagePath=row[4]?row[4]:"";
+        blocks.push_back(block);
+    }
+    return blocks;
+}
+    
+int MySQL::getLatestVersion(int fileId){
+    if(!conn_)
+        return -1;
+    string sql="SELECT MAX(version) FROM file_block_map WHERE file_id="+std::to_string(fileId);
+    MYSQL_RES* res=query(sql);
+    if(!res)return -1;
+    MYSQL_ROW row=mysql_fetch_row(res);
+    if(!row)return -1;
+    int version=row[0]?std::stoi(row[0]):-1;
+    return version;
+}
+
+
+std::vector<std::string> MySQL::listRefHashes(int fileId, int version){
+    if(!conn_)
+        return {};
+    string sql="SELECT DISTINCT block_hash FROM file_block_map WHERE file_id="+std::to_string(fileId)+" AND version="+std::to_string(version);
+    MYSQL_RES* res=query(sql);
+    if(!res)return {};
+    std::vector<std::string>hashes;
+    MYSQL_ROW row=nullptr;
+    while((row=mysql_fetch_row(res))!=nullptr){
+        hashes.push_back(row[0]?row[0]:"");
+    }
+    return hashes;
+}
+
+bool MySQL::updateFileStorage(int userId, int fileId,
+                              const std::string& md5,
+                              const std::string& storagePath,
+                              uint64_t fileSize,
+                              std::vector<std::string>&oldPaths 
+                            )   // 归零旧文件路径
+{
+    if (!conn_) return false;
+
+    // 1. 旧 storage_id
+    std::string sql =
+        "SELECT storage_id FROM user_file "
+        "WHERE user_id = " + std::to_string(userId) +
+        " AND id = " + std::to_string(fileId);
+    MYSQL_RES* res = query(sql);
+    if (!res) return false;
+    MYSQL_ROW row = mysql_fetch_row(res);
+    int oldId = -1;
+    if (row && row[0]) oldId = std::stoi(row[0]);
+    mysql_free_result(res);
+
+    // 2. 整文件去重
+    int storageId = -1;
+    bool unchanged = false;
+    if (checkMD5(md5, storageId)) {          // 已有同 md5 的物理文件
+        unchanged = (storageId == oldId);    // 内容没变 → 不折腾 ref
+    } else {
+        if (!insertStorage(md5, storagePath, fileSize, storageId))
+            return false;                    // ref=0,unchanged=false
+    }
+
+    // 3. 引用新 storage(内容变化或换 storage 才 +1)
+    if (!unchanged) {
+        if (!increaseRefCount(storageId)) return false;
+    }
+
+    // 4. user_file 指向新 storage
+    sql =
+        "UPDATE user_file SET storage_id = " + std::to_string(storageId) +
+        ", filesize = " + std::to_string(fileSize) +
+        " WHERE user_id = " + std::to_string(userId) +
+        " AND id = " + std::to_string(fileId);
+    if (!update(sql)) return false;
+
+    // 5. 旧 storage 被本行释放;id 相同说明没换内容,不处理
+    if (oldId != -1 && oldId != storageId) {
+        std::string oldPath;
+        if (getStoragePath(oldId, oldPath)) {
+            if (decreaseRefCount(oldId))          // 归零会 DELETE file_storage 行
+                oldPaths.push_back(oldPath);      // 交调用方删磁盘文件
+        }
+    }
+    return true;
+}
+
+bool MySQL::getMissingHashes(const std::vector<std::string>& hashes, std::vector<std::string>& missingHashes){
+    if(!conn_) return false;
+    string sql="SELECT block_hash FROM content_block WHERE block_hash IN (";
+    for(size_t i=0;i<hashes.size();++i){
+        if(i>0)sql+=",";
+        sql+="'"+escapeString(hashes[i])+"'";
+    }
+    sql+=")";
+    MYSQL_RES* res=query(sql);
+    if(!res)return false;
+    std::unordered_set<std::string>existingHashes;
+    MYSQL_ROW row=nullptr;
+    while((row=mysql_fetch_row(res))!=nullptr){
+        existingHashes.insert(row[0]?row[0]:"");
+    }
+
+    for(const auto& hash : hashes){
+        if(existingHashes.find(hash) == existingHashes.end()){
+            missingHashes.push_back(hash);
+        }
+    }
+    return true;
+}
+
+int MySQL::getFileId(int userId,const std::string&parentPath,const std::string&filename){
+    if(!conn_){
+        return false;
+    }
+    std::string sql =
+        "SELECT id FROM user_file "
+        "WHERE user_id = " + std::to_string(userId) +
+        " AND parent_path = '" + escapeString(parentPath) + "'" +
+        " AND filename = '" + escapeString(filename) + "' LIMIT 1";
+    MYSQL_RES* res = query(sql);
+    if (!res) return -1;
+    MYSQL_ROW row = mysql_fetch_row(res);
+    int id = (row && row[0]) ? std::stoi(row[0]) : -1;
+    mysql_free_result(res);
+    return id;
+}
+
+bool MySQL::syncCommit(int userId, int fileId, int version,
+                       const std::vector<BlockInfo>& blocks,
+                       const std::string& md5, const std::string& relPath,
+                       std::vector<std::string>& oldFiles,
+                       std::vector<std::string>& deadBlocks)
+{
+    if (!conn_ || blocks.empty()) return false;
+    if (!update("START TRANSACTION")) return false;
+
+    auto fail = [&] { update("ROLLBACK"); return false; };
+
+    // a) 旧版本清单(用于块 ref 回减)
+    std::vector<BlockInfo> oldBlocks;
+    if (version > 1)
+        oldBlocks=getFileBlockMap(fileId, version - 1);
+
+    // b) 写新版本清单
+    if (!saveFileBlockMap(fileId, version, blocks)) return fail();
+
+    // c) 新块 ref+1;旧版本里不在新清单的块 ref-1,归零收集
+    for (const auto& b : blocks)
+    {
+        int id = -1;
+        insertBlockIfAbsent(b.hash, b.size, id);
+    }
+    for (const auto& b : oldBlocks)
+    {
+        bool deleted=true;
+        updateBlockRefCount(b.hash,-1,deleted);
+        if(deleted)
+            deadBlocks.push_back(b.hash);   // ref 归零,事务提交后删物理块
+    }
+
+    // d) user_file 切到新整文件(旧整文件 ref 归零 → oldFiles)
+    uint64_t totalSize = 0;
+    for (auto& b : blocks) totalSize += b.size;
+    if (!updateFileStorage(userId, fileId, md5, relPath, totalSize, oldFiles))
+        return fail();
+
+    if (!update("COMMIT")) return fail();
+    return true;
 }

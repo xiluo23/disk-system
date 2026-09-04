@@ -69,12 +69,15 @@ enum CmdType : int {
   RENAME_FILE = 5,
   UPLOAD_CHECK = 6,
   DOWNLOAD_CHECK = 7,
+  SYNC_CHECK = 8,
+  SYNC_UPLOAD = 9,
+  SYNC_COMMIT = 10,
   CmdType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   CmdType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool CmdType_IsValid(int value);
 constexpr CmdType CmdType_MIN = UPLOAD_FILE;
-constexpr CmdType CmdType_MAX = DOWNLOAD_CHECK;
+constexpr CmdType CmdType_MAX = SYNC_COMMIT;
 constexpr int CmdType_ARRAYSIZE = CmdType_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* CmdType_descriptor();
@@ -405,6 +408,8 @@ class FileRequest final :
   // accessors -------------------------------------------------------
 
   enum : int {
+    kBlockHashsFieldNumber = 19,
+    kBlockSizeFieldNumber = 20,
     kTokenFieldNumber = 2,
     kClientIDFieldNumber = 3,
     kFilenameFieldNumber = 5,
@@ -413,6 +418,7 @@ class FileRequest final :
     kIvFieldNumber = 12,
     kPathFieldNumber = 13,
     kChunkMd5FieldNumber = 14,
+    kBlockHashFieldNumber = 18,
     kTypeFieldNumber = 1,
     kSeckeyIDFieldNumber = 4,
     kFilesizeFieldNumber = 6,
@@ -421,7 +427,54 @@ class FileRequest final :
     kChunkSizeFieldNumber = 9,
     kUploadIdFieldNumber = 15,
     kChunkIndexFieldNumber = 16,
+    kVersionFieldNumber = 17,
   };
+  // repeated bytes block_hashs = 19;
+  int block_hashs_size() const;
+  private:
+  int _internal_block_hashs_size() const;
+  public:
+  void clear_block_hashs();
+  const std::string& block_hashs(int index) const;
+  std::string* mutable_block_hashs(int index);
+  void set_block_hashs(int index, const std::string& value);
+  void set_block_hashs(int index, std::string&& value);
+  void set_block_hashs(int index, const char* value);
+  void set_block_hashs(int index, const void* value, size_t size);
+  std::string* add_block_hashs();
+  void add_block_hashs(const std::string& value);
+  void add_block_hashs(std::string&& value);
+  void add_block_hashs(const char* value);
+  void add_block_hashs(const void* value, size_t size);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>& block_hashs() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>* mutable_block_hashs();
+  private:
+  const std::string& _internal_block_hashs(int index) const;
+  std::string* _internal_add_block_hashs();
+  public:
+
+  // repeated uint32 block_size = 20;
+  int block_size_size() const;
+  private:
+  int _internal_block_size_size() const;
+  public:
+  void clear_block_size();
+  private:
+  uint32_t _internal_block_size(int index) const;
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint32_t >&
+      _internal_block_size() const;
+  void _internal_add_block_size(uint32_t value);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint32_t >*
+      _internal_mutable_block_size();
+  public:
+  uint32_t block_size(int index) const;
+  void set_block_size(int index, uint32_t value);
+  void add_block_size(uint32_t value);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint32_t >&
+      block_size() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint32_t >*
+      mutable_block_size();
+
   // string token = 2;
   void clear_token();
   const std::string& token() const;
@@ -534,6 +587,20 @@ class FileRequest final :
   std::string* _internal_mutable_chunk_md5();
   public:
 
+  // bytes block_hash = 18;
+  void clear_block_hash();
+  const std::string& block_hash() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_block_hash(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_block_hash();
+  PROTOBUF_NODISCARD std::string* release_block_hash();
+  void set_allocated_block_hash(std::string* block_hash);
+  private:
+  const std::string& _internal_block_hash() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_block_hash(const std::string& value);
+  std::string* _internal_mutable_block_hash();
+  public:
+
   // .CmdType type = 1;
   void clear_type();
   ::CmdType type() const;
@@ -606,6 +673,15 @@ class FileRequest final :
   void _internal_set_chunk_index(uint64_t value);
   public:
 
+  // uint64 version = 17;
+  void clear_version();
+  uint64_t version() const;
+  void set_version(uint64_t value);
+  private:
+  uint64_t _internal_version() const;
+  void _internal_set_version(uint64_t value);
+  public:
+
   // @@protoc_insertion_point(class_scope:FileRequest)
  private:
   class _Internal;
@@ -614,6 +690,9 @@ class FileRequest final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> block_hashs_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint32_t > block_size_;
+    mutable std::atomic<int> _block_size_cached_byte_size_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr token_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr clientid_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr filename_;
@@ -622,6 +701,7 @@ class FileRequest final :
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr iv_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr path_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr chunk_md5_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr block_hash_;
     int type_;
     uint32_t seckeyid_;
     uint64_t filesize_;
@@ -630,6 +710,7 @@ class FileRequest final :
     uint32_t chunk_size_;
     uint64_t upload_id_;
     uint64_t chunk_index_;
+    uint64_t version_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -760,6 +841,8 @@ class FileResponse final :
   enum : int {
     kFilesFieldNumber = 9,
     kFinishedChunksFieldNumber = 14,
+    kMissingHashesFieldNumber = 15,
+    kBlockOffsetsFieldNumber = 16,
     kMessageFieldNumber = 3,
     kClientIDFieldNumber = 4,
     kDataFieldNumber = 8,
@@ -811,6 +894,52 @@ class FileResponse final :
       finished_chunks() const;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint32_t >*
       mutable_finished_chunks();
+
+  // repeated bytes missing_hashes = 15;
+  int missing_hashes_size() const;
+  private:
+  int _internal_missing_hashes_size() const;
+  public:
+  void clear_missing_hashes();
+  const std::string& missing_hashes(int index) const;
+  std::string* mutable_missing_hashes(int index);
+  void set_missing_hashes(int index, const std::string& value);
+  void set_missing_hashes(int index, std::string&& value);
+  void set_missing_hashes(int index, const char* value);
+  void set_missing_hashes(int index, const void* value, size_t size);
+  std::string* add_missing_hashes();
+  void add_missing_hashes(const std::string& value);
+  void add_missing_hashes(std::string&& value);
+  void add_missing_hashes(const char* value);
+  void add_missing_hashes(const void* value, size_t size);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>& missing_hashes() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>* mutable_missing_hashes();
+  private:
+  const std::string& _internal_missing_hashes(int index) const;
+  std::string* _internal_add_missing_hashes();
+  public:
+
+  // repeated uint64 block_offsets = 16;
+  int block_offsets_size() const;
+  private:
+  int _internal_block_offsets_size() const;
+  public:
+  void clear_block_offsets();
+  private:
+  uint64_t _internal_block_offsets(int index) const;
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t >&
+      _internal_block_offsets() const;
+  void _internal_add_block_offsets(uint64_t value);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t >*
+      _internal_mutable_block_offsets();
+  public:
+  uint64_t block_offsets(int index) const;
+  void set_block_offsets(int index, uint64_t value);
+  void add_block_offsets(uint64_t value);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t >&
+      block_offsets() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t >*
+      mutable_block_offsets();
 
   // string message = 3;
   void clear_message();
@@ -942,6 +1071,9 @@ class FileResponse final :
     ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::FileItem > files_;
     ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint32_t > finished_chunks_;
     mutable std::atomic<int> _finished_chunks_cached_byte_size_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> missing_hashes_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t > block_offsets_;
+    mutable std::atomic<int> _block_offsets_cached_byte_size_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr message_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr clientid_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr data_;
@@ -1673,6 +1805,198 @@ inline void FileRequest::set_chunk_index(uint64_t value) {
   // @@protoc_insertion_point(field_set:FileRequest.chunk_index)
 }
 
+// uint64 version = 17;
+inline void FileRequest::clear_version() {
+  _impl_.version_ = uint64_t{0u};
+}
+inline uint64_t FileRequest::_internal_version() const {
+  return _impl_.version_;
+}
+inline uint64_t FileRequest::version() const {
+  // @@protoc_insertion_point(field_get:FileRequest.version)
+  return _internal_version();
+}
+inline void FileRequest::_internal_set_version(uint64_t value) {
+  
+  _impl_.version_ = value;
+}
+inline void FileRequest::set_version(uint64_t value) {
+  _internal_set_version(value);
+  // @@protoc_insertion_point(field_set:FileRequest.version)
+}
+
+// bytes block_hash = 18;
+inline void FileRequest::clear_block_hash() {
+  _impl_.block_hash_.ClearToEmpty();
+}
+inline const std::string& FileRequest::block_hash() const {
+  // @@protoc_insertion_point(field_get:FileRequest.block_hash)
+  return _internal_block_hash();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void FileRequest::set_block_hash(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.block_hash_.SetBytes(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:FileRequest.block_hash)
+}
+inline std::string* FileRequest::mutable_block_hash() {
+  std::string* _s = _internal_mutable_block_hash();
+  // @@protoc_insertion_point(field_mutable:FileRequest.block_hash)
+  return _s;
+}
+inline const std::string& FileRequest::_internal_block_hash() const {
+  return _impl_.block_hash_.Get();
+}
+inline void FileRequest::_internal_set_block_hash(const std::string& value) {
+  
+  _impl_.block_hash_.Set(value, GetArenaForAllocation());
+}
+inline std::string* FileRequest::_internal_mutable_block_hash() {
+  
+  return _impl_.block_hash_.Mutable(GetArenaForAllocation());
+}
+inline std::string* FileRequest::release_block_hash() {
+  // @@protoc_insertion_point(field_release:FileRequest.block_hash)
+  return _impl_.block_hash_.Release();
+}
+inline void FileRequest::set_allocated_block_hash(std::string* block_hash) {
+  if (block_hash != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.block_hash_.SetAllocated(block_hash, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.block_hash_.IsDefault()) {
+    _impl_.block_hash_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:FileRequest.block_hash)
+}
+
+// repeated bytes block_hashs = 19;
+inline int FileRequest::_internal_block_hashs_size() const {
+  return _impl_.block_hashs_.size();
+}
+inline int FileRequest::block_hashs_size() const {
+  return _internal_block_hashs_size();
+}
+inline void FileRequest::clear_block_hashs() {
+  _impl_.block_hashs_.Clear();
+}
+inline std::string* FileRequest::add_block_hashs() {
+  std::string* _s = _internal_add_block_hashs();
+  // @@protoc_insertion_point(field_add_mutable:FileRequest.block_hashs)
+  return _s;
+}
+inline const std::string& FileRequest::_internal_block_hashs(int index) const {
+  return _impl_.block_hashs_.Get(index);
+}
+inline const std::string& FileRequest::block_hashs(int index) const {
+  // @@protoc_insertion_point(field_get:FileRequest.block_hashs)
+  return _internal_block_hashs(index);
+}
+inline std::string* FileRequest::mutable_block_hashs(int index) {
+  // @@protoc_insertion_point(field_mutable:FileRequest.block_hashs)
+  return _impl_.block_hashs_.Mutable(index);
+}
+inline void FileRequest::set_block_hashs(int index, const std::string& value) {
+  _impl_.block_hashs_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set:FileRequest.block_hashs)
+}
+inline void FileRequest::set_block_hashs(int index, std::string&& value) {
+  _impl_.block_hashs_.Mutable(index)->assign(std::move(value));
+  // @@protoc_insertion_point(field_set:FileRequest.block_hashs)
+}
+inline void FileRequest::set_block_hashs(int index, const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  _impl_.block_hashs_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:FileRequest.block_hashs)
+}
+inline void FileRequest::set_block_hashs(int index, const void* value, size_t size) {
+  _impl_.block_hashs_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:FileRequest.block_hashs)
+}
+inline std::string* FileRequest::_internal_add_block_hashs() {
+  return _impl_.block_hashs_.Add();
+}
+inline void FileRequest::add_block_hashs(const std::string& value) {
+  _impl_.block_hashs_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:FileRequest.block_hashs)
+}
+inline void FileRequest::add_block_hashs(std::string&& value) {
+  _impl_.block_hashs_.Add(std::move(value));
+  // @@protoc_insertion_point(field_add:FileRequest.block_hashs)
+}
+inline void FileRequest::add_block_hashs(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  _impl_.block_hashs_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:FileRequest.block_hashs)
+}
+inline void FileRequest::add_block_hashs(const void* value, size_t size) {
+  _impl_.block_hashs_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:FileRequest.block_hashs)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>&
+FileRequest::block_hashs() const {
+  // @@protoc_insertion_point(field_list:FileRequest.block_hashs)
+  return _impl_.block_hashs_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>*
+FileRequest::mutable_block_hashs() {
+  // @@protoc_insertion_point(field_mutable_list:FileRequest.block_hashs)
+  return &_impl_.block_hashs_;
+}
+
+// repeated uint32 block_size = 20;
+inline int FileRequest::_internal_block_size_size() const {
+  return _impl_.block_size_.size();
+}
+inline int FileRequest::block_size_size() const {
+  return _internal_block_size_size();
+}
+inline void FileRequest::clear_block_size() {
+  _impl_.block_size_.Clear();
+}
+inline uint32_t FileRequest::_internal_block_size(int index) const {
+  return _impl_.block_size_.Get(index);
+}
+inline uint32_t FileRequest::block_size(int index) const {
+  // @@protoc_insertion_point(field_get:FileRequest.block_size)
+  return _internal_block_size(index);
+}
+inline void FileRequest::set_block_size(int index, uint32_t value) {
+  _impl_.block_size_.Set(index, value);
+  // @@protoc_insertion_point(field_set:FileRequest.block_size)
+}
+inline void FileRequest::_internal_add_block_size(uint32_t value) {
+  _impl_.block_size_.Add(value);
+}
+inline void FileRequest::add_block_size(uint32_t value) {
+  _internal_add_block_size(value);
+  // @@protoc_insertion_point(field_add:FileRequest.block_size)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint32_t >&
+FileRequest::_internal_block_size() const {
+  return _impl_.block_size_;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint32_t >&
+FileRequest::block_size() const {
+  // @@protoc_insertion_point(field_list:FileRequest.block_size)
+  return _internal_block_size();
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint32_t >*
+FileRequest::_internal_mutable_block_size() {
+  return &_impl_.block_size_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint32_t >*
+FileRequest::mutable_block_size() {
+  // @@protoc_insertion_point(field_mutable_list:FileRequest.block_size)
+  return _internal_mutable_block_size();
+}
+
 // -------------------------------------------------------------------
 
 // FileResponse
@@ -2102,6 +2426,128 @@ inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint32_t >*
 FileResponse::mutable_finished_chunks() {
   // @@protoc_insertion_point(field_mutable_list:FileResponse.finished_chunks)
   return _internal_mutable_finished_chunks();
+}
+
+// repeated bytes missing_hashes = 15;
+inline int FileResponse::_internal_missing_hashes_size() const {
+  return _impl_.missing_hashes_.size();
+}
+inline int FileResponse::missing_hashes_size() const {
+  return _internal_missing_hashes_size();
+}
+inline void FileResponse::clear_missing_hashes() {
+  _impl_.missing_hashes_.Clear();
+}
+inline std::string* FileResponse::add_missing_hashes() {
+  std::string* _s = _internal_add_missing_hashes();
+  // @@protoc_insertion_point(field_add_mutable:FileResponse.missing_hashes)
+  return _s;
+}
+inline const std::string& FileResponse::_internal_missing_hashes(int index) const {
+  return _impl_.missing_hashes_.Get(index);
+}
+inline const std::string& FileResponse::missing_hashes(int index) const {
+  // @@protoc_insertion_point(field_get:FileResponse.missing_hashes)
+  return _internal_missing_hashes(index);
+}
+inline std::string* FileResponse::mutable_missing_hashes(int index) {
+  // @@protoc_insertion_point(field_mutable:FileResponse.missing_hashes)
+  return _impl_.missing_hashes_.Mutable(index);
+}
+inline void FileResponse::set_missing_hashes(int index, const std::string& value) {
+  _impl_.missing_hashes_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set:FileResponse.missing_hashes)
+}
+inline void FileResponse::set_missing_hashes(int index, std::string&& value) {
+  _impl_.missing_hashes_.Mutable(index)->assign(std::move(value));
+  // @@protoc_insertion_point(field_set:FileResponse.missing_hashes)
+}
+inline void FileResponse::set_missing_hashes(int index, const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  _impl_.missing_hashes_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:FileResponse.missing_hashes)
+}
+inline void FileResponse::set_missing_hashes(int index, const void* value, size_t size) {
+  _impl_.missing_hashes_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:FileResponse.missing_hashes)
+}
+inline std::string* FileResponse::_internal_add_missing_hashes() {
+  return _impl_.missing_hashes_.Add();
+}
+inline void FileResponse::add_missing_hashes(const std::string& value) {
+  _impl_.missing_hashes_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:FileResponse.missing_hashes)
+}
+inline void FileResponse::add_missing_hashes(std::string&& value) {
+  _impl_.missing_hashes_.Add(std::move(value));
+  // @@protoc_insertion_point(field_add:FileResponse.missing_hashes)
+}
+inline void FileResponse::add_missing_hashes(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  _impl_.missing_hashes_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:FileResponse.missing_hashes)
+}
+inline void FileResponse::add_missing_hashes(const void* value, size_t size) {
+  _impl_.missing_hashes_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:FileResponse.missing_hashes)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>&
+FileResponse::missing_hashes() const {
+  // @@protoc_insertion_point(field_list:FileResponse.missing_hashes)
+  return _impl_.missing_hashes_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>*
+FileResponse::mutable_missing_hashes() {
+  // @@protoc_insertion_point(field_mutable_list:FileResponse.missing_hashes)
+  return &_impl_.missing_hashes_;
+}
+
+// repeated uint64 block_offsets = 16;
+inline int FileResponse::_internal_block_offsets_size() const {
+  return _impl_.block_offsets_.size();
+}
+inline int FileResponse::block_offsets_size() const {
+  return _internal_block_offsets_size();
+}
+inline void FileResponse::clear_block_offsets() {
+  _impl_.block_offsets_.Clear();
+}
+inline uint64_t FileResponse::_internal_block_offsets(int index) const {
+  return _impl_.block_offsets_.Get(index);
+}
+inline uint64_t FileResponse::block_offsets(int index) const {
+  // @@protoc_insertion_point(field_get:FileResponse.block_offsets)
+  return _internal_block_offsets(index);
+}
+inline void FileResponse::set_block_offsets(int index, uint64_t value) {
+  _impl_.block_offsets_.Set(index, value);
+  // @@protoc_insertion_point(field_set:FileResponse.block_offsets)
+}
+inline void FileResponse::_internal_add_block_offsets(uint64_t value) {
+  _impl_.block_offsets_.Add(value);
+}
+inline void FileResponse::add_block_offsets(uint64_t value) {
+  _internal_add_block_offsets(value);
+  // @@protoc_insertion_point(field_add:FileResponse.block_offsets)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t >&
+FileResponse::_internal_block_offsets() const {
+  return _impl_.block_offsets_;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t >&
+FileResponse::block_offsets() const {
+  // @@protoc_insertion_point(field_list:FileResponse.block_offsets)
+  return _internal_block_offsets();
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t >*
+FileResponse::_internal_mutable_block_offsets() {
+  return &_impl_.block_offsets_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t >*
+FileResponse::mutable_block_offsets() {
+  // @@protoc_insertion_point(field_mutable_list:FileResponse.block_offsets)
+  return _internal_mutable_block_offsets();
 }
 
 #ifdef __GNUC__

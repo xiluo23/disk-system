@@ -19,4 +19,13 @@ struct FileInfo
     std::uint64_t size = 0;
 };
 
+struct BlockInfo
+{
+    int id = 0;
+    std::string hash;
+    std::uint64_t size = 0;
+    std::uint64_t refCount = 0;
+    std::string storagePath;
+};
+
 #endif

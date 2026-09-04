@@ -9,16 +9,19 @@
 namespace fs = std::filesystem;
 
 // 构造文件管理器，指定文件根目录，默认使用 ./files。
-FileManager::FileManager(std::string baseDir)
-    : baseDir_(std::move(baseDir))
+FileManager::FileManager(std::string baseDir,std::string blocksDir)
+    : baseDir_(std::move(baseDir)), blocksDir_(std::move(blocksDir))
 {
-    if (baseDir_.empty())
+    if (baseDir.empty())
     {
         baseDir_ = "./files";
     }
-
+    if(blocksDir.empty()){
+        blocksDir_="./blocks"
+    }
     std::error_code ec;
     fs::create_directories(baseDir_, ec);
+    fs::create_directories(blocksDir_, ec);
 }
 
 // 将传入路径规范化，禁止使用 .. 逃逸到根目录之外。
@@ -228,9 +231,160 @@ bool FileManager::appendFile(const std::string& storagePath, const void* data, s
                static_cast<std::streamsize>(len));
 
     return file.good();
-    
+}
 
-    
+bool FileManager::writeBlock(const std::string& hash, const void* data, size_t len) // ./blocks/<hash>
+{
+    if (hash.empty()) return false;
+    if (data == nullptr && len != 0) return false;
 
-    
+    std::error_code ec;
+    // 块目录:./blocks
+
+    std::string finalPath = (fs::path(blockDir) / hash).string();
+
+    // 内容寻址:同 hash 必同内容,已存在直接成功(并发安全的关键)
+    if (fs::exists(finalPath, ec))
+        return true;
+
+    // 先写唯一临时文件，多线程并发写，避免多个线程同时写同一个文件，导致文件内容不一致。
+    std::string tmpPath = finalPath + ".tmp." + std::to_string(::getpid());
+    {
+        std::ofstream out(tmpPath, std::ios::binary | std::ios::trunc);
+        if (!out) return false;
+        if (len != 0)
+            out.write(static_cast<const char*>(data),
+                      static_cast<std::streamsize>(len));
+        out.flush();
+        if (!out.good()) { out.close(); fs::remove(tmpPath, ec); return false; }
+    }
+
+    // rename 原子发布:读者永远看不到半截文件
+    fs::rename(tmpPath, finalPath, ec);
+    if (ec)
+    {
+        // Windows 下目标已存在时 rename 会失败,但内容相同,等价成功
+        if (fs::exists(finalPath, ec)) { fs::remove(tmpPath, ec); return true; }
+        fs::remove(tmpPath, ec);
+        return false;
+    }
+    return true;
+
+}
+bool FileManager::readBlock(const std::string& hash, std::vector<char>& out)
+{
+    out.clear();
+    if (hash.empty()) return false;
+    std::string path = (fs::path(blocksDir_)  / hash).string();
+    std::ifstream in(path, std::ios::binary);
+    if (!in) return false;
+    in.seekg(0, std::ios::end);
+    std::streamoff sz = in.tellg();
+    in.seekg(0, std::ios::beg);
+    out.resize(static_cast<size_t>(sz));
+    if (sz != 0) in.read(out.data(), sz);
+    return in.good() || in.eof();
+}
+bool FileManager::removeBlock(const std::string& hash)
+{
+    if (hash.empty()) return false;
+    std::string path = (fs::path(blocksDir_)  / hash).string();
+    std::error_code ec;
+    return fs::remove(path, ec);
+}
+// 按块清单顺序拼接,重建完整文件
+bool FileManager::rebuildFile(const std::vector<BlockInfo>& blocks, const std::string& targetPath)
+{
+    if (blocks.empty()) return false;
+
+    std::string resolved = resolvePath(targetPath);   // 复用现有路径规范化
+    std::error_code ec;
+    fs::create_directories(fs::path(resolved).parent_path(), ec);
+
+    std::string tmp = resolved + ".rebuild." + std::to_string(::getpid());
+
+    {
+        std::ofstream out(tmp, std::ios::binary | std::ios::trunc);
+        if (!out) return false;
+
+        for (const auto& b : blocks)                 // 调用方保证按 block_index 升序
+        {
+            std::vector<char> buf;
+            if (!readBlock(b.hash, buf))             // 复用上一轮的 readBlock
+            {
+                out.close();
+                fs::remove(tmp, ec);
+                return false;
+            }
+            if (!buf.empty())
+                out.write(buf.data(), static_cast<std::streamsize>(buf.size()));
+            if (!out.good())
+            {
+                out.close();
+                fs::remove(tmp, ec);
+                return false;
+            }
+        }
+        out.flush();
+        if (!out.good())
+        {
+            out.close();
+            fs::remove(tmp, ec);
+            return false;
+        }
+    }
+
+    fs::rename(tmp, resolved, ec);                   // 原子发布
+    if (ec)
+    {
+        fs::remove(tmp, ec);
+        return false;
+    }
+    return true;
+}
+
+
+bool FileManager::rebuildWholeFile(const std::vector<BlockInfo>& blocks,
+                                   std::string& md5, const std::string& relPath)
+{
+    if (blocks.empty()) return false;
+    std::string syncDir = (fs::path(baseDir_) / "sync").string();
+    std::error_code ec;
+    fs::create_directories(syncDir, ec);
+
+    std::string tmp = (fs::path(syncDir) / (".tmp." + std::to_string(::getpid()))).string();
+
+    MD5_CTX ctx; MD5_Init(&ctx);              // 流式算整文件 md5
+    {
+        std::ofstream out(tmp, std::ios::binary | std::ios::trunc);
+        if (!out) return false;
+        for (const auto& b : blocks)
+        {
+            std::vector<char> buf;
+            if (!readBlock(b.hash, buf)) { out.close(); fs::remove(tmp, ec); return false; }
+            if (!buf.empty())
+            {
+                out.write(buf.data(), (std::streamsize)buf.size());
+                MD5_Update(&ctx, buf.data(), buf.size());
+            }
+            if (!out.good()) { out.close(); fs::remove(tmp, ec); return false; }
+        }
+        out.flush();
+        if (!out.good()) { out.close(); fs::remove(tmp, ec); return false; }
+    }
+
+    unsigned char md[MD5_DIGEST_LENGTH];
+    MD5_Final(md, &ctx);
+    char hex[33];
+    for (int i = 0; i < MD5_DIGEST_LENGTH; ++i)
+        std::sprintf(hex + i * 2, "%02x", md[i]);
+    hex[32] = '\0';
+
+    md5 = hex;
+    relPath = "sync/" + hex;                  // 整文件也按内容寻址 → 秒传去重可用
+    fs::rename(tmp, (fs::path(syncDir) / hex).string(), ec);
+    if (ec) { fs::remove(tmp, ec); return false; }
+    return true;
+
+
 }

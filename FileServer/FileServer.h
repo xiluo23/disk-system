@@ -21,6 +21,12 @@
 #include"MyAES.h"
 #include"Codec.h"
 #include"ThreadPool.h"
+#include"ConnectPool.h"
+#include"Guard.h"
+#include <fstream>
+#include <iostream>
+#include <jsoncpp/json/json.h>
+#include <sys/ipc.h>
 using namespace std;
 
 class FileServer
@@ -56,11 +62,22 @@ private:
 
     void handleDownloadCheck(const FileRequest& req,FileResponse&rsp);
 
+    // SYNC_CHECK: 收客户端块清单 → 返回服务端缺失块
+    void handleSyncCheck(const FileRequest&, FileResponse&);
+    
+    // SYNC_UPLOAD: 收单个新块(密文 data + block_hash) → 写块池,ref++
+    void handleSyncUpload(const FileRequest&, FileResponse&);
+    
+    // SYNC_COMMIT: 收完整块清单 → 写 file_block_map
+    //              → rebuildFile 重建用户文件
+    //              → 更新 user_file(storage_id),旧块 ref--,空则删块
+    void handleSyncCommit(const FileRequest&, FileResponse&);
+
     bool encryptResponseData(const std::string& clientId, FileResponse& rsp);
 
     unique_ptr<SecKeyShm> _secShm;
     unique_ptr<FileManager> _fileManager;
-    unique_ptr<MySQL> _mysql;
+    unique_ptr<ConnectPool> _connectPool;
     unique_ptr<ThreadPool> _filePool;
 };
 

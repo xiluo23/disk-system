@@ -49,7 +49,7 @@ bool SecMngServer::check_sign(const Request&req){
     signData += req.data();
     signData+=req.iv();
     std::vector<unsigned char>signature(signData.size());
-    if(_rsaMap[req.clientid()]->rsa_verify((const unsigned char*)signData.data(),signData.size(),(const unsigned char*)req.sign().data(),req.sign().size())==-1){
+    if(_rsaMap.find(req.clientid())!=_rsaMap.end() && _rsaMap[req.clientid()]->rsa_verify((const unsigned char*)signData.data(),signData.size(),(const unsigned char*)req.sign().data(),req.sign().size())==-1){
         std::cout<<"rsa_verify error\n";
         return false;
     }
@@ -139,6 +139,7 @@ void SecMngServer::handle_keyagree(const Request&req,Response&rsp){
     if(len==-1){
         std::cout<<"rsa encrypt fail\n";
         rsp.set_status(false);
+        return ;
     }
     rsp.set_status(true);
     rsp.set_data(encrypted.data(),len);

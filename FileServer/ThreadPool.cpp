@@ -4,13 +4,6 @@ ThreadPool::ThreadPool(size_t threadNum)
 {
     workers_.reserve(threadNum);
 
-
-    for(size_t i=0;i<threadNum;i++)
-    {
-        workers_.emplace_back(
-            &ThreadPool::worker,
-            this);
-    }
 }
 
 ThreadPool::~ThreadPool(){
@@ -64,4 +57,11 @@ void ThreadPool::submit(std::function<void()> task)
 void ThreadPool::start()
 {
     running_=true;
+    int threadNum=workers_.capacity();
+    for(size_t i=0;i<threadNum;i++)
+    {
+        workers_.emplace_back(
+            &ThreadPool::worker,
+            this);
+    }
 }

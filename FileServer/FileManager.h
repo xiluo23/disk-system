@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 #include<spdlog/spdlog.h>
-#include "info,h"
+#include "info.h"
 const int CHUNK_SIZE=1024*1024;
 class FileManager
 {
@@ -35,11 +35,21 @@ public:
                     size_t len,
                     uint64_t offset);
 
+    bool writeBlock(const std::string& hash, const void* data, size_t len); // ./blocks/<hash>
+    bool readBlock(const std::string& hash, std::vector<char>& out);
+    bool removeBlock(const std::string& hash);
+    // 按块清单顺序拼接,重建完整文件
+    bool rebuildFile(const std::vector<BlockInfo>& blocks, const std::string& targetPath);
+
+    bool rebuildWholeFile(const std::vector<BlockInfo>& blocks,
+                                   std::string& md5, std::string& relPath);
+                                   
 private:
     std::string normalizePath(const std::string& path) const;
     std::string resolvePath(const std::string& relativePath) const;
 
     std::string baseDir_;
+    std::string blocksDir_;
 };
 
 #endif
