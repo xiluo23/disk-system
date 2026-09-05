@@ -2,11 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QTcpSocket>
-#include"Secmng.h"
-#include"index.h"
-#include<QRandomGenerator>
-#include"Login.pb.h"
+#include<opencv2/opencv.hpp>
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -21,18 +17,8 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
 
-private slots:
-    void onReadyRead();
-
-    void on_login_clicked();
-
 private:
     Ui::MainWindow *ui;
-    index*_index;
-    Secmng* _secmng;//密钥协商
-    QTcpSocket*_socket;
-    QString _token;
-    QString _clientId;
-
+    cv::VideoCapture cap;
 };
 #endif // MAINWINDOW_H

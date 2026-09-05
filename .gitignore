@@ -4,6 +4,27 @@ bin/
 *.o
 *.a
 *.so
+<<<<<<< HEAD
 .vscode/
 *.out
 Database/create_table.cpp
+test1/*
+test2/*
+# Qt build
+build/
+*.user
+*.autosave
+
+# Qt Creator
+.qtc_clangd/
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+
+# binaries
+bin/
+*.exe
+*.dll
