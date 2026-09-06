@@ -22,7 +22,12 @@ FileServer::FileServer(muduo::net::EventLoop* loop, const muduo::net::InetAddres
 
     _fileManager = make_unique<FileManager>();
 
-    _connectPool = make_unique<ConnectPool>(4);
+    _connectPool = make_unique<ConnectPool>(8);
+    if (!_connectPool->alive())
+    {
+        spdlog::error("Database pool empty on startup (check config.json / MySQL). "
+                      "All DB requests will fail.");
+    }
 
 }
 

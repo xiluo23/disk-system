@@ -1,4 +1,8 @@
 #include "index.h"
+#include <thread>
+
+// FileServer 地址要和构造函数里 _socket connectToHost 一致
+static const QString kSyncHost = QStringLiteral("192.168.234.129");
 
 index::index(Secmng*secmng,QString&token,QString&clientid,QWidget *parent)
     : QMainWindow(parent),_secmng(secmng),_token(token),_clientId(clientid)
@@ -76,7 +80,85 @@ index::index(Secmng*secmng,QString&token,QString&clientid,QWidget *parent)
     connect(_downloadManager,&DownloadManager::downloadFinished,this,&index::downdloadFinish);
     connect(_downloadManager,&DownloadManager::downloadFailed,this,&index::downloadFail);
     connect(_downloadManager,&DownloadManager::progress,this,&index::updateDownloadProgress);
+
+    // ---- 上传后文件监听 + 增量同步(无独立"同步"入口) ----
+    _syncStore = new SyncStateStore();
+    _syncStore->load();
+    _syncEngine = new SyncEngine(this);
+    _syncEngine->init(_syncStore);
+    _syncEngine->setCredential(
+        kSyncHost, 8003, _token, _clientId,
+        QByteArray::fromStdString(_secmng->getKey()));
+    connect(_syncEngine, &SyncEngine::syncProgress, this, &index::onSyncProgress);
+    connect(_syncEngine, &SyncEngine::syncFinished, this, &index::onSyncFinished);
+
+    _syncWatcher = new QFileSystemWatcher(this);
+    connect(_syncWatcher, &QFileSystemWatcher::fileChanged,
+            this, &index::onFileChanged);
+    _syncDebounce = new QTimer(this);
+    _syncDebounce->setSingleShot(true);
+    _syncDebounce->setInterval(1000);                 // 1s 去抖
+    connect(_syncDebounce, &QTimer::timeout, this, &index::processPendingSync);
 }
+
+// ================= 上传后文件监听 + 增量同步 =================
+
+// 普通上传成功后:登记云端位置 + 记录本地基线 + 开始监听该文件
+void index::registerUploadWatch(const QString& localPath)
+{
+    if (localPath.isEmpty() || !_syncEngine)
+        return;
+
+    const QFileInfo fi(localPath);
+    _syncEngine->registerUploadedFile(localPath, _currentPath, fi.fileName());
+
+    if (!_syncWatcher->files().contains(localPath))
+        _syncWatcher->addPath(localPath);
+    statusBar()->showMessage("已登记自动同步: " + fi.fileName());
+}
+
+void index::onFileChanged(const QString& path)
+{
+    // 一次保存常触发多次 fileChanged,收集后统一去抖
+    if (!_syncStore->records().contains(path))
+        return;                            // 只处理登记过的(上传过的)文件
+    _pendingFiles.insert(path);
+    _syncDebounce->start();
+}
+
+void index::processPendingSync()
+{
+    if (_syncing || _pendingFiles.isEmpty())
+        return;
+
+    const QSet<QString> pending = _pendingFiles;
+    _pendingFiles.clear();
+
+    _syncing = true;
+    SyncEngine* engine = _syncEngine;
+    // 独立线程串行同步,避免卡 UI
+    std::thread([this, engine, pending]() {
+        for (const auto& f : pending)
+            engine->syncFile(f);
+        QMetaObject::invokeMethod(this, [this] { _syncing = false; },
+                                  Qt::QueuedConnection);
+    }).detach();
+}
+
+void index::onSyncProgress(const QString& localPath, int done, int total)
+{
+    statusBar()->showMessage(
+        QString("同步 %1: %2/%3")
+            .arg(QFileInfo(localPath).fileName()).arg(done).arg(total));
+}
+
+void index::onSyncFinished(const QString& localPath, bool ok)
+{
+    const QString name = QFileInfo(localPath).fileName();
+    statusBar()->showMessage(ok ? QString("同步完成: %1").arg(name)
+                                : QString("同步失败: %1").arg(name));
+}
+
 void index::downdloadFinish(){
     QMessageBox::information(
         this,
@@ -102,14 +184,9 @@ void index::updateDownloadProgress(int value){
     _downloadProgress->setValue(value);
 }
 void index::upLoadFinish(){
-    QMessageBox::information(
-        this,
-        "上传成功",
-        QString::fromStdString(
-            "success"
-            )
-        );
     _uploadProgress->hide();
+    // 上传成功 → 登记该文件:后续修改自动增量同步
+    registerUploadWatch(_currentUploadFile);
     on_FileList();
 }
 void index::upLoadFail(){

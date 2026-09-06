@@ -15,7 +15,11 @@
 #include"uploadmanager.h"
 #include"downloadmanager.h"
 #include"codec.h"
-
+#include <QFileSystemWatcher>
+#include <QTimer>
+#include <QSet>
+#include "syncstate.h"
+#include "syncengine.h"
 namespace Ui {
 class index;
 }
@@ -58,7 +62,13 @@ private slots:
     void downdloadFinish();
     void downloadFail();
     void updateDownloadProgress(int value);
+    // ---- 上传后文件监听 + 增量同步 ----
+    void onFileChanged(const QString& path);
+    void processPendingSync();
+    void onSyncProgress(const QString& localPath, int done, int total);
+    void onSyncFinished(const QString& localPath, bool ok);
 private:
+    void registerUploadWatch(const QString& localPath);
     Ui::index *ui;
     Secmng* _secmng;//密钥协商
     QTcpSocket*_socket;
@@ -81,6 +91,14 @@ private:
     quint64 _downloadOffset;
     QString _downloadPath;
     QString _downloadFilename;
+
+    // ---- 上传后文件监听 + 增量同步 ----
+    SyncStateStore* _syncStore = nullptr;
+    SyncEngine* _syncEngine = nullptr;
+    QFileSystemWatcher* _syncWatcher = nullptr;
+    QTimer* _syncDebounce = nullptr;
+    QSet<QString> _pendingFiles;
+    bool _syncing = false;
 };
 
 #endif // INDEX_H

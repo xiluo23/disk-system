@@ -35,6 +35,8 @@ qt_add_executable(test2
     downloadmanager.h downloadmanager.cpp
     downtask.h downtask.cpp
     cdc.h cdc.cpp
+    syncstate.h syncstate.cpp
+    syncengine.h syncengine.cpp
 )
 
 target_link_libraries(test2 PRIVATE
