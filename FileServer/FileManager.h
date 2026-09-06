@@ -7,11 +7,14 @@
 #include <vector>
 #include<spdlog/spdlog.h>
 #include "info.h"
+#include<unistd.h>
+#include<openssl/md5.h>
+#include"cdc.h"
 const int CHUNK_SIZE=1024*1024;
 class FileManager
 {
 public:
-    explicit FileManager(std::string baseDir = "./files");
+    explicit FileManager(std::string baseDir,std::string blocksDir);
 
     bool upload(const std::string& path,
                 const char* data,

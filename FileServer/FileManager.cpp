@@ -17,7 +17,7 @@ FileManager::FileManager(std::string baseDir,std::string blocksDir)
         baseDir_ = "./files";
     }
     if(blocksDir.empty()){
-        blocksDir_="./blocks"
+        blocksDir_="./blocks";
     }
     std::error_code ec;
     fs::create_directories(baseDir_, ec);
@@ -241,7 +241,7 @@ bool FileManager::writeBlock(const std::string& hash, const void* data, size_t l
     std::error_code ec;
     // 块目录:./blocks
 
-    std::string finalPath = (fs::path(blockDir) / hash).string();
+    std::string finalPath = (fs::path(blocksDir_) / hash).string();
 
     // 内容寻址:同 hash 必同内容,已存在直接成功(并发安全的关键)
     if (fs::exists(finalPath, ec))
@@ -301,7 +301,7 @@ bool FileManager::rebuildFile(const std::vector<BlockInfo>& blocks, const std::s
     std::error_code ec;
     fs::create_directories(fs::path(resolved).parent_path(), ec);
 
-    std::string tmp = resolved + ".rebuild." + std::to_string(::getpid());
+    std::string tmp = resolved + ".rebuild." + std::to_string(getpid());
 
     {
         std::ofstream out(tmp, std::ios::binary | std::ios::trunc);
@@ -345,7 +345,7 @@ bool FileManager::rebuildFile(const std::vector<BlockInfo>& blocks, const std::s
 
 
 bool FileManager::rebuildWholeFile(const std::vector<BlockInfo>& blocks,
-                                   std::string& md5, const std::string& relPath)
+                                   std::string& md5, std::string& relPath)
 {
     if (blocks.empty()) return false;
     std::string syncDir = (fs::path(baseDir_) / "sync").string();
@@ -381,7 +381,7 @@ bool FileManager::rebuildWholeFile(const std::vector<BlockInfo>& blocks,
     hex[32] = '\0';
 
     md5 = hex;
-    relPath = "sync/" + hex;                  // 整文件也按内容寻址 → 秒传去重可用
+    relPath = "sync/" + std::string(hex);                  // 整文件也按内容寻址 → 秒传去重可用
     fs::rename(tmp, (fs::path(syncDir) / hex).string(), ec);
     if (ec) { fs::remove(tmp, ec); return false; }
     return true;

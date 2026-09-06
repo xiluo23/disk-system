@@ -20,14 +20,9 @@ FileServer::FileServer(muduo::net::EventLoop* loop, const muduo::net::InetAddres
     _secShm = make_unique<SecKeyShm>(key);
     _secShm->init();
 
-    _fileManager = make_unique<FileManager>();
+    _fileManager = make_unique<FileManager>("","");
 
-    _connectPool = make_unique<ConnectPool>(8);
-    if (!_connectPool->alive())
-    {
-        spdlog::error("Database pool empty on startup (check config.json / MySQL). "
-                      "All DB requests will fail.");
-    }
+    _connectPool = make_unique<ConnectPool>(10);
 
 }
 
@@ -222,7 +217,7 @@ bool FileServer::verifyToken(const string& token, const string& clientid)
 {
     Guard guard(_connectPool.get());
     MySQL* _mysql=guard.getConnection();
-    if (token.empty() || clientid.empty() || !_mysql || !_mysql->getConnection())
+    if (token.empty() || clientid.empty() )
     {
         spdlog::info("token or clientif mysql error");
         return false;
@@ -255,8 +250,6 @@ string FileServer::calcMD5(const unsigned char*data,size_t len){
 // 处理上传请求：先验证身份，再解密文件内容，最后写入文件系统。
 void FileServer::handleUpload(const FileRequest& req, FileResponse& rsp)
 {
-    Guard guard(_connectPool.get());
-    MySQL* _mysql=guard.getConnection();
     rsp.set_type(UPLOAD_FILE);
     rsp.set_eof(false);
     if (!verifyToken(req.token(), req.clientid()))
@@ -266,6 +259,8 @@ void FileServer::handleUpload(const FileRequest& req, FileResponse& rsp)
         rsp.set_message("Invalid token");
         return;
     }
+    Guard guard(_connectPool.get());
+    MySQL* _mysql=guard.getConnection();
     SecKeyInfo* info = _secShm->find(req.clientid().c_str());
     if (info == nullptr)
     {
@@ -449,14 +444,14 @@ void FileServer::handleDownload(const FileRequest& req,const muduo::net::TcpConn
 void FileServer::handleDelete(const FileRequest& req, FileResponse& rsp)
 {
     rsp.set_type(DELETE_FILE);
-    Guard guard(_connectPool.get());
-    MySQL* _mysql=guard.getConnection();
     if (!verifyToken(req.token(), req.clientid()))
     {
         rsp.set_status(false);
         rsp.set_message("Invalid token");
         return;
     }
+    Guard guard(_connectPool.get());
+    MySQL* _mysql=guard.getConnection();
     std::vector<std::string>storage_paths;
     if (!_mysql->deleteFile(std::stoi(req.clientid()), req.filename(),req.path(),storage_paths))
     {
@@ -481,17 +476,15 @@ void FileServer::handleDelete(const FileRequest& req, FileResponse& rsp)
 // 列出指定目录下的文件和子目录。
 void FileServer::handleList(const FileRequest& req, FileResponse& rsp)
 {
-    Guard guard(_connectPool.get());
-    MySQL* _mysql=guard.getConnection();
     rsp.set_type(LIST_FILE);
-
     if (!verifyToken(req.token(), req.clientid()))
     {
         rsp.set_status(false);
         rsp.set_message("Invalid token");
         return;
     }
-
+    Guard guard(_connectPool.get());
+    MySQL* _mysql=guard.getConnection();
     std::vector<FileInfo> files;
 
     if (!_mysql->listFiles(
@@ -519,15 +512,14 @@ void FileServer::handleList(const FileRequest& req, FileResponse& rsp)
 void FileServer::handleMkdir(const FileRequest& req, FileResponse& rsp)
 {
     rsp.set_type(MKDIR);
-    Guard guard(_connectPool.get());
-    MySQL* _mysql=guard.getConnection();
     if (!verifyToken(req.token(), req.clientid()))
     {
         rsp.set_status(false);
         rsp.set_message("Invalid token");
         return;
     }
-
+    Guard guard(_connectPool.get());
+    MySQL* _mysql=guard.getConnection();
     if (!_mysql->insertUserFile(
             std::stoi(req.clientid()),
             req.filename(),
@@ -547,8 +539,6 @@ void FileServer::handleMkdir(const FileRequest& req, FileResponse& rsp)
 // 重命名指定文件或目录。
 void FileServer::handleRename(const FileRequest& req, FileResponse& rsp)
 {
-    Guard guard(_connectPool.get());
-    MySQL* _mysql=guard.getConnection();
     rsp.set_type(RENAME_FILE);
 
     if (!verifyToken(req.token(), req.clientid()))
@@ -557,7 +547,8 @@ void FileServer::handleRename(const FileRequest& req, FileResponse& rsp)
         rsp.set_message("Invalid token");
         return;
     }
-
+    Guard guard(_connectPool.get());
+    MySQL* _mysql=guard.getConnection();
     std::string newName(req.data().begin(), req.data().end());
 
     if (!_mysql->renameFile(
@@ -577,17 +568,17 @@ void FileServer::handleRename(const FileRequest& req, FileResponse& rsp)
 
 void FileServer::handleSyncCheck(const FileRequest&req, FileResponse&rsp){
     rsp.set_type(SYNC_CHECK);
-    Guard guard(_connectPool.get());
-    MySQL* _mysql=guard.getConnection();
     if (!verifyToken(req.token(), req.clientid()))
     {
         rsp.set_status(false);
         rsp.set_message("Invalid token");
         return;
     }
+    Guard guard(_connectPool.get());
+    MySQL* _mysql=guard.getConnection();
      // 1. 收客户端发来的块哈希清单(它本地已算好的新块清单)
     std::vector<std::string> hashes;
-    for (const auto& h : req.block_hashes())
+    for (const auto& h : req.block_hashs())
         if (!h.empty()) hashes.push_back(h);
     if (hashes.empty())
     {
@@ -620,15 +611,15 @@ void FileServer::handleSyncCheck(const FileRequest&req, FileResponse&rsp){
     
  
 void FileServer::handleSyncUpload(const FileRequest&req, FileResponse&rsp){
-    rsp.set_type(SYNC_UPLOAD)
-    Guard guard(_connectPool.get());
-    MySQL* _mysql=guard.getConnection();
+    rsp.set_type(SYNC_UPLOAD);
     if (!verifyToken(req.token(), req.clientid()))
     {
         rsp.set_status(false);
         rsp.set_message("Invalid token");
         return;
     }
+    Guard guard(_connectPool.get());
+    MySQL* _mysql=guard.getConnection();
     const std::string& hash = req.block_hash();
     if (hash.empty())
     {
@@ -691,22 +682,21 @@ void FileServer::handleSyncUpload(const FileRequest&req, FileResponse&rsp){
     
 void FileServer::handleSyncCommit(const FileRequest&req, FileResponse&rsp){
     rsp.set_type(SYNC_COMMIT);
-    Guard guard(_connectPool.get());
-    MySQL* _mysql=guard.getConnection();
     if (!verifyToken(req.token(), req.clientid()))
     { rsp.set_status(false); rsp.set_message("Invalid token"); return; }
-
+    Guard guard(_connectPool.get());
+    MySQL* _mysql=guard.getConnection();
     // 1. 解析清单(下标即 block_index)
     std::vector<BlockInfo> blocks;
-    int n = req.block_hashes_size();
-    if (n == 0 || n != req.block_sizes_size())
+    int n = req.block_hashs_size();
+    if (n == 0 || n != req.block_size_size())
     { rsp.set_status(false); rsp.set_message("bad manifest"); return; }
     for (int i = 0; i < n; ++i)
     {
         BlockInfo b;
-        b.index = i;
-        b.hash  = req.block_hashes(i);
-        b.size  = req.block_sizes(i);
+        b.id = i;
+        b.hash  = req.block_hashs(i);
+        b.size  = req.block_size(i);
         blocks.push_back(b);
     }
 
@@ -731,7 +721,12 @@ void FileServer::handleSyncCommit(const FileRequest&req, FileResponse&rsp){
     std::vector<std::string> deadBlocks;      // 旧版本块(ref归零)待删
     if (!_mysql->syncCommit(userId, fileId, version, blocks,
                             md5, relPath, oldFiles, deadBlocks))
-    { rsp.set_status(false); rsp.set_message("commit failed"); return; }
+    { 
+        rsp.set_status(false); 
+        rsp.set_message("commit failed"); 
+        spdlog::warn("mysql syncCommit fail");
+        return; 
+    }
 
     // 5. 提交后清理(DB 已一致,失败只留孤儿文件)
     for (auto& p : oldFiles)  _fileManager->remove(p);
